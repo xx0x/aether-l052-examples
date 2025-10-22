@@ -4,7 +4,7 @@
  * @details Simple blink program that toggles LED on PA15 every 500ms
  *          Uses internal HSI oscillator (16MHz) and HAL library
  * 
- * Hardware: STM32L052K8U3 (32KB Flash, 8KB RAM)
+ * Hardware: STM32L052K8U3 (64KB Flash, 8KB RAM)
  * LED: Connected to PA15
  * Crystal: Crystalless design using internal HSI
  */
@@ -15,7 +15,6 @@
 // Function prototypes
 void SystemClock_Config(void);
 void GPIO_Init(void);
-void delay(uint32_t ms);
 void Error_Handler(void);
 
 /**
@@ -38,11 +37,11 @@ int main(void)
     {
         // Turn LED ON
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
-        delay(100);  // Wait 100ms
+        HAL_Delay(300);  // Wait 100ms
 
         // Turn LED OFF  
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
-        delay(900);  // Wait 900ms
+        HAL_Delay(700);  // Wait 700ms
     }
 }
 
@@ -53,8 +52,8 @@ int main(void)
  */
 void SystemClock_Config(void)
 {
-    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+    RCC_OscInitTypeDef RCC_OscInitStruct = {};
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = {};
 
     // Configure the main internal regulator output voltage
     __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
@@ -91,7 +90,7 @@ void SystemClock_Config(void)
  */
 void GPIO_Init(void)
 {
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitTypeDef GPIO_InitStruct = {};
 
     // GPIO Ports Clock Enable
     __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -106,16 +105,6 @@ void GPIO_Init(void)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;     // Low speed is sufficient for LED
     
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-}
-
-/**
- * @brief Simple delay function using HAL_Delay
- * @param ms Delay time in milliseconds
- * @note This function uses HAL_Delay which relies on SysTick timer
- */
-void delay(uint32_t ms)
-{
-    HAL_Delay(ms);
 }
 
 /**

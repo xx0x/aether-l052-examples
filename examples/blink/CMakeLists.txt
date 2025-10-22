@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 
 # Main definitions
 set(PROJECT_NAME stm32l052_blink)
-set(LD_FILE stm32l052k8u3.ld)
+set(LD_FILE ../../ld/stm32l052k8u3.ld)
 set(DEVICE_NAME STM32L052K8U3)
 
 # Set C standard
@@ -74,28 +74,33 @@ add_definitions(-DSTM32L052xx)
 add_definitions(-DUSE_HAL_DRIVER)
 add_definitions(-DMSI_VALUE=2097000U)
 
+# Paths to core libraries
+set(HAL_DRIVER_PATH ${CMAKE_SOURCE_DIR}/../../lib/stm32l0xx-hal-driver)
+set(CMSIS_6_PATH ${CMAKE_SOURCE_DIR}/../../lib/CMSIS_6)
+set(CMSIS_DEVICE_L0_PATH ${CMAKE_SOURCE_DIR}/../../lib/cmsis-device-l0)
+
 # Common sources
 set(COMMON_SOURCES
     ${CMAKE_SOURCE_DIR}/main.cpp
-    ${CMAKE_SOURCE_DIR}/../../lib/cmsis-device-l0/Source/Templates/system_stm32l0xx.c
-    ${CMAKE_SOURCE_DIR}/../../lib/stm32l0xx-hal-driver/Src/stm32l0xx_hal.c
-    ${CMAKE_SOURCE_DIR}/../../lib/stm32l0xx-hal-driver/Src/stm32l0xx_hal_cortex.c
-    ${CMAKE_SOURCE_DIR}/../../lib/stm32l0xx-hal-driver/Src/stm32l0xx_hal_dma.c
-    ${CMAKE_SOURCE_DIR}/../../lib/stm32l0xx-hal-driver/Src/stm32l0xx_hal_flash.c
-    ${CMAKE_SOURCE_DIR}/../../lib/stm32l0xx-hal-driver/Src/stm32l0xx_hal_flash_ex.c
-    ${CMAKE_SOURCE_DIR}/../../lib/stm32l0xx-hal-driver/Src/stm32l0xx_hal_gpio.c
-    ${CMAKE_SOURCE_DIR}/../../lib/stm32l0xx-hal-driver/Src/stm32l0xx_hal_pwr.c
-    ${CMAKE_SOURCE_DIR}/../../lib/stm32l0xx-hal-driver/Src/stm32l0xx_hal_pwr_ex.c
-    ${CMAKE_SOURCE_DIR}/../../lib/stm32l0xx-hal-driver/Src/stm32l0xx_hal_rcc.c
-    ${CMAKE_SOURCE_DIR}/../../lib/stm32l0xx-hal-driver/Src/stm32l0xx_hal_rcc_ex.c
-    ${CMAKE_SOURCE_DIR}/../../lib/cmsis-device-l0/Source/Templates/gcc/startup_stm32l052xx.s
+    ${CMSIS_DEVICE_L0_PATH}/Source/Templates/system_stm32l0xx.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_cortex.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_dma.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_flash.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_flash_ex.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_gpio.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_pwr.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_pwr_ex.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_rcc.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_rcc_ex.c
+   ${CMSIS_DEVICE_L0_PATH}/Source/Templates/gcc/startup_stm32l052xx.s
 )
 
 set(COMMON_INCLUDES
     ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/../../lib/CMSIS_6/CMSIS/Core/Include
-    ${CMAKE_SOURCE_DIR}/../../lib/cmsis-device-l0/Include
-    ${CMAKE_SOURCE_DIR}/../../lib/stm32l0xx-hal-driver/Inc
+    ${CMSIS_6_PATH}/CMSIS/Core/Include
+    ${CMSIS_DEVICE_L0_PATH}/Include
+    ${HAL_DRIVER_PATH}/Inc
 )
 
 add_executable(${PROJECT_NAME}
