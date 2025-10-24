@@ -1,10 +1,10 @@
 /**
  * @file main.cpp
- * @brief Arduino-style blink example for STM32L052K8U3
+ * @brief Arduino-style blink example for STM32L052K8
  * @details Simple blink program that toggles LED on PA15 every 500ms
  *          Uses internal HSI oscillator (16MHz) and HAL library
  * 
- * Hardware: STM32L052K8U3 (64KB Flash, 8KB RAM)
+ * Hardware: STM32L052K8 (64KB Flash, 8KB RAM)
  * LED: Connected to PA15
  * Crystal: Crystalless design using internal HSI
  */

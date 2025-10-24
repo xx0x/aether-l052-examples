@@ -1,8 +1,8 @@
 /**
  ******************************************************************************
- * @file      stm32l052k8u3.ld
+ * @file      stm32l052k8.ld
  * @author    STM32 Blink Example  
- * @brief     Linker script for STM32L052K8U3 Device with
+ * @brief     Linker script for STM32L052K8 Device with
  *            64KByte FLASH, 8KByte RAM
  *
  *            Set heap size, stack size and stack location according
@@ -35,8 +35,8 @@ _Min_Stack_Size = 0x200;   /* required amount of stack - 512 bytes should be eno
 /* Specify the memory areas */
 MEMORY
 {
-    FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 64K    /* STM32L052K8U3 has 64KB Flash */
-    RAM (xrw)   : ORIGIN = 0x20000000, LENGTH = 8K     /* STM32L052K8U3 has 8KB RAM */
+    FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 64K    /* STM32L052K8 has 64KB Flash */
+    RAM (xrw)   : ORIGIN = 0x20000000, LENGTH = 8K     /* STM32L052K8 has 8KB RAM */
 }
 
 /* Define output sections */
