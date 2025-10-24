@@ -225,7 +225,7 @@ function(create_example_targets example_name)
         COMMENT "Flashing ${example_name} (normal version)"
     )
     
-    add_custom_target(flash-${example_name}-bootloader
+    add_custom_target(flash-${example_name}_bootloader
         COMMAND JLinkExe -CommanderScript ${TARGET_NAME_BOOTLOADER}.jlink
         DEPENDS ${TARGET_NAME_BOOTLOADER}
         COMMENT "Flashing ${example_name} (bootloader version)"
@@ -268,7 +268,7 @@ message(STATUS "Usage:")
 message(STATUS "  Configure once: cmake ..")
 message(STATUS "  Build all examples: make")
 message(STATUS "  Build specific example: make <example_name>")
-message(STATUS "  Build specific bootloader: make <example_name>-bootloader")
+message(STATUS "  Build specific bootloader: make <example_name>_bootloader")
 message(STATUS "  Flash example: make flash-<example_name>")
 message(STATUS "  Available examples:")
 foreach(EXAMPLE_DIR ${EXAMPLE_DIRS}) 
