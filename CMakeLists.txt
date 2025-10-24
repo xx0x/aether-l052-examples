@@ -66,6 +66,22 @@ function(setup_linker_flags target_name ld_file)
     set_target_properties(${target_name} PROPERTIES LINK_FLAGS ${CMAKE_C_LINK_FLAGS})
 endfunction()
 
+# Function to generate J-Link script file
+function(generate_jlink_script target_name)
+    add_custom_command(TARGET ${target_name} POST_BUILD
+        COMMAND echo "device ${DEVICE_NAME}" > ${target_name}.jlink
+        COMMAND echo "si SWD" >> ${target_name}.jlink
+        COMMAND echo "speed 4000" >> ${target_name}.jlink
+        COMMAND echo "connect" >> ${target_name}.jlink
+        COMMAND echo "halt" >> ${target_name}.jlink
+        COMMAND echo "loadfile ${target_name}.hex" >> ${target_name}.jlink
+        COMMAND echo "r" >> ${target_name}.jlink
+        COMMAND echo "g" >> ${target_name}.jlink
+        COMMAND echo "exit" >> ${target_name}.jlink
+        COMMENT "Generating J-Link script for ${target_name}"
+    )
+endfunction()
+
 project(stm32l052_examples)
 
 enable_language(C CXX ASM)
@@ -186,16 +202,10 @@ function(create_example_targets example_name)
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${TARGET_NAME_NORMAL}.elf ${TARGET_NAME_NORMAL}.hex
         COMMAND ${CMAKE_SIZE} ${TARGET_NAME_NORMAL}.elf
         COMMENT "Building ${TARGET_NAME_NORMAL}.bin and ${TARGET_NAME_NORMAL}.hex"
-        COMMAND echo "device ${DEVICE_NAME}" > ${TARGET_NAME_NORMAL}.jlink
-        COMMAND echo "si SWD" >> ${TARGET_NAME_NORMAL}.jlink
-        COMMAND echo "speed 4000" >> ${TARGET_NAME_NORMAL}.jlink
-        COMMAND echo "connect" >> ${TARGET_NAME_NORMAL}.jlink
-        COMMAND echo "halt" >> ${TARGET_NAME_NORMAL}.jlink
-        COMMAND echo "loadfile ${TARGET_NAME_NORMAL}.hex" >> ${TARGET_NAME_NORMAL}.jlink
-        COMMAND echo "r" >> ${TARGET_NAME_NORMAL}.jlink
-        COMMAND echo "g" >> ${TARGET_NAME_NORMAL}.jlink
-        COMMAND echo "exit" >> ${TARGET_NAME_NORMAL}.jlink
     )
+    
+    # Generate J-Link script for normal version
+    generate_jlink_script(${TARGET_NAME_NORMAL})
     
     # Post build commands for bootloader version
     add_custom_command(TARGET ${TARGET_NAME_BOOTLOADER} POST_BUILD
@@ -203,26 +213,20 @@ function(create_example_targets example_name)
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${TARGET_NAME_BOOTLOADER}.elf ${TARGET_NAME_BOOTLOADER}.hex
         COMMAND ${CMAKE_SIZE} ${TARGET_NAME_BOOTLOADER}.elf
         COMMENT "Building ${TARGET_NAME_BOOTLOADER}.bin and ${TARGET_NAME_BOOTLOADER}.hex"
-        COMMAND echo "device ${DEVICE_NAME}" > ${TARGET_NAME_BOOTLOADER}.jlink
-        COMMAND echo "si SWD" >> ${TARGET_NAME_BOOTLOADER}.jlink
-        COMMAND echo "speed 4000" >> ${TARGET_NAME_BOOTLOADER}.jlink
-        COMMAND echo "connect" >> ${TARGET_NAME_BOOTLOADER}.jlink
-        COMMAND echo "halt" >> ${TARGET_NAME_BOOTLOADER}.jlink
-        COMMAND echo "loadfile ${TARGET_NAME_BOOTLOADER}.hex" >> ${TARGET_NAME_BOOTLOADER}.jlink
-        COMMAND echo "r" >> ${TARGET_NAME_BOOTLOADER}.jlink
-        COMMAND echo "g" >> ${TARGET_NAME_BOOTLOADER}.jlink
-        COMMAND echo "exit" >> ${TARGET_NAME_BOOTLOADER}.jlink
     )
+    
+    # Generate J-Link script for bootloader version
+    generate_jlink_script(${TARGET_NAME_BOOTLOADER})
     
     # Create flash targets
     add_custom_target(flash-${example_name}
-        COMMAND JLinkExe -device ${DEVICE_NAME} -if SWD -speed 4000 -autoconnect 1 -CommanderScript ${TARGET_NAME_NORMAL}.jlink
+        COMMAND JLinkExe -CommanderScript ${TARGET_NAME_NORMAL}.jlink
         DEPENDS ${TARGET_NAME_NORMAL}
         COMMENT "Flashing ${example_name} (normal version)"
     )
     
     add_custom_target(flash-${example_name}-bootloader
-        COMMAND JLinkExe -device ${DEVICE_NAME} -if SWD -speed 4000 -autoconnect 1 -CommanderScript ${TARGET_NAME_BOOTLOADER}.jlink
+        COMMAND JLinkExe -CommanderScript ${TARGET_NAME_BOOTLOADER}.jlink
         DEPENDS ${TARGET_NAME_BOOTLOADER}
         COMMENT "Flashing ${example_name} (bootloader version)"
     )
@@ -264,7 +268,7 @@ message(STATUS "Usage:")
 message(STATUS "  Configure once: cmake ..")
 message(STATUS "  Build all examples: make")
 message(STATUS "  Build specific example: make <example_name>")
-message(STATUS "  Build specific bootloader: make <example_name>_bootloader")
+message(STATUS "  Build specific bootloader: make <example_name>-bootloader")
 message(STATUS "  Flash example: make flash-<example_name>")
 message(STATUS "  Available examples:")
 foreach(EXAMPLE_DIR ${EXAMPLE_DIRS}) 
