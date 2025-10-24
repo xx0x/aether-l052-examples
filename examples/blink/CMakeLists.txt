@@ -17,7 +17,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release")
+    set(CMAKE_BUILD_TYPE "Debug")
 endif()
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
@@ -117,12 +117,18 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${COMMON_INCLUDES}
 )
 
-# Post build - Create hex and binary files
+set(JLINK_FILE ${PROJECT_NAME}.jlink)
+
+# Post build - Create hex and binary files, create J-Link flash script
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O binary ${PROJECT_NAME}.elf ${PROJECT_NAME}.bin
     COMMAND ${CMAKE_OBJCOPY} -O ihex ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex
     COMMAND ${CMAKE_SIZE} ${PROJECT_NAME}.elf
-    COMMENT "Building ${PROJECT_NAME}.bin and ${PROJECT_NAME}.hex"
+    COMMENT "Building ${PROJECT_NAME}.bin, ${PROJECT_NAME}.hex and ${JLINK_FILE}"    
+    COMMAND echo "loadfile ${PROJECT_NAME}.hex" > ${JLINK_FILE}
+    COMMAND echo "r" >> ${JLINK_FILE}
+    COMMAND echo "g" >> ${JLINK_FILE}
+    COMMAND echo "q" >> ${JLINK_FILE}
 )
 
 # Print build information
