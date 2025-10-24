@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 # Main definitions
 set(PROJECT_NAME stm32l052_blink)
 set(LD_FILE ../../ld/stm32l052k8u3.ld)
-set(DEVICE_NAME STM32L052K8U3)
+set(DEVICE_NAME STM32L052K8)
 
 # Set C standard
 set(CMAKE_C_STANDARD 11)
@@ -12,7 +12,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Define the build type
@@ -125,10 +125,15 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O ihex ${PROJECT_NAME}.elf ${PROJECT_NAME}.hex
     COMMAND ${CMAKE_SIZE} ${PROJECT_NAME}.elf
     COMMENT "Building ${PROJECT_NAME}.bin, ${PROJECT_NAME}.hex and ${JLINK_FILE}"    
-    COMMAND echo "loadfile ${PROJECT_NAME}.hex" > ${JLINK_FILE}
+    COMMAND echo "device ${DEVICE_NAME}" > ${JLINK_FILE}
+    COMMAND echo "si SWD" >> ${JLINK_FILE}
+    COMMAND echo "speed 4000" >> ${JLINK_FILE}
+    COMMAND echo "connect" >> ${JLINK_FILE}
+    COMMAND echo "halt" >> ${JLINK_FILE}
+    COMMAND echo "loadfile ${PROJECT_NAME}.hex" >> ${JLINK_FILE}
     COMMAND echo "r" >> ${JLINK_FILE}
     COMMAND echo "g" >> ${JLINK_FILE}
-    COMMAND echo "q" >> ${JLINK_FILE}
+    COMMAND echo "exit" >> ${JLINK_FILE}
 )
 
 # Print build information
