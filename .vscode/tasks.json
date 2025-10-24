@@ -49,8 +49,8 @@
         },
         {
             "label": "configure",
-            "type": "process",
-            "command": "./configure.sh",
+            "type": "shell",
+            "command": "if [ -d build ]; then rm -rf build; fi && mkdir build && cd build && cmake ..",
             "options": {
                 "cwd": "${workspaceRoot}"
             },
