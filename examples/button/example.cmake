@@ -1,4 +1,4 @@
-# CMakeLists.txt for button example
+# Example name
 set(EXAMPLE_NAME button)
 
 # Example-specific sources (relative to this directory)

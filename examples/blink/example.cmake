@@ -1,4 +1,4 @@
-# CMakeLists.txt for blink example
+# Example name
 set(EXAMPLE_NAME blink)
 
 # Example-specific sources (relative to this directory)

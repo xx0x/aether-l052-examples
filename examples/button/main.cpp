@@ -1,11 +1,13 @@
 /**
  * @file main.cpp
- * @brief Arduino-style button example for STM32L052K8
+ * @brief Button example for STM32L052K8
  * @details Simple button program that reads button state on PA0
+ *          and switches LED on PA15 accordingly.
  *          Uses internal HSI oscillator (16MHz) and HAL library
  *
  * Hardware: STM32L052K8 (64KB Flash, 8KB RAM)
  * LED: Connected to PA15
+ * Button: Connected to PA0
  * Crystal: Crystalless design using internal HSI
  */
 
@@ -35,11 +37,13 @@ int main(void)
     // Main loop - Arduino style
     while (1)
     {
-        // Read button state 
+        // Read button state
         bool button_state = (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_RESET); // Active low button
 
         // Turn LED according to button state
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, button_state ? GPIO_PIN_SET : GPIO_PIN_RESET);
+
+        // Small delay for button debounce
         HAL_Delay(10);
     }
 }
