@@ -2,6 +2,9 @@
 
 #include "stm32l0xx_hal.h"
 
+/**
+ * @brief Class to manage PWM brightness control
+ */
 class PwmBrightness
 {
 public:
@@ -20,6 +23,10 @@ public:
     };
     */
 
+    /**
+     * @brief Initializes PWM for brightness control on TIM22_CH1 (PA6)
+     * @return True if initialization was successful, false otherwise
+     */
     bool Init()
     {
         TIM_OC_InitTypeDef sConfigOC = {};
@@ -73,6 +80,10 @@ public:
         return true;
     }
 
+    /**
+     * @brief Sets brightness level from 0 to PwmBrightness::kResolution
+     * @param brightness Brightness level (0 = minimum, PwmBrightness::kResolution = full brightness)
+     */
     void Set(uint16_t brightness)
     {
         if (!initialized_)
@@ -95,17 +106,17 @@ public:
     }
 
     /**
-     * @brief Turn LEDs completely off
+     * @brief Sets the lowest brightness
      */
-    void Off()
+    void Min()
     {
         Set(0);
     }
 
     /**
-     * @brief Turn LEDs to full brightness
+     * @brief Sets the full brightness
      */
-    void On()
+    void Max()
     {
         Set(kResolution);
     }
