@@ -11,7 +11,8 @@
                 "${workspaceFolder}/lib/CMSIS_6/CMSIS/Core/Include"
             ],
             "defines": [
-                "STM32L052xx"
+                "STM32L052xx",
+                "HAL_TIM_MODULE_ENABLED"
             ],
             "macFrameworkPath": [
                 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"

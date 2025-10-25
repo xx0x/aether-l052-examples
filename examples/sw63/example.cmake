@@ -18,6 +18,7 @@ set(EXAMPLE_HAL_SOURCES
     ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_pwr_ex.c
     ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_rcc.c
     ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_rcc_ex.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_tim.c
 )
 
 # Example-specific includes (relative to this directory) 

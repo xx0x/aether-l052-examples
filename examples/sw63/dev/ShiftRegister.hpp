@@ -16,7 +16,7 @@ public:
         Pin latch;
     };
 
-    void Init(const Config &config)
+    bool Init(const Config &config)
     {
         config_ = config;
 
@@ -42,6 +42,7 @@ public:
         Pin::EnablePort(config_.latch);
 
         initialized_ = true;
+        return true;
     }
 
     void Write(const std::bitset<N> &data)
