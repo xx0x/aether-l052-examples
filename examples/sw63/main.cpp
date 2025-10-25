@@ -1,5 +1,7 @@
 #include "stm32l0xx_hal.h"
 #include "stm32l052xx.h"
+#include <bitset>
+#include "dev/ShiftRegister.hpp"
 
 // Global variables
 volatile bool button_just_pressed = false;
@@ -8,7 +10,6 @@ volatile bool button_just_pressed = false;
 void SystemClock_Config(void);
 void GPIO_Init(void);
 void Error_Handler(void);
-
 
 /**
  * @brief Main program entry point
@@ -32,18 +33,26 @@ int main(void)
     // Initialize GPIO
     GPIO_Init();
 
+    // Shift register for LEDs
+    ShiftRegister<24> display_register;
+    display_register.Init({
+        .data = {GPIOA, GPIO_PIN_7},  // MOSI - PA7
+        .clock = {GPIOA, GPIO_PIN_5}, // SCK - PA5
+        .latch = {GPIOA, GPIO_PIN_8}  // LATCH - PA8
+    });
+
     // Main loop
     while (1)
     {
 
         // Flash the LED three times
-        for (size_t i = 0; i < 3; ++i)
-        {
-            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
-            HAL_Delay(200);
-            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
-            HAL_Delay(200);
-        }
+        // for (size_t i = 0; i < 3; ++i)
+        //{
+        //    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
+        //    HAL_Delay(200);
+        //    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
+        //    HAL_Delay(200);
+        //}
 
         // Clear button pressed flag and any pending EXTI interrupt
         button_just_pressed = false;
@@ -53,14 +62,15 @@ int main(void)
         // Enter Stop mode
         // The system will wake up on EXTI interrupt (button press)
         HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
-        
+
         // When we wake up from Stop mode, the system clock needs to be reconfigured
         // because the HSI oscillator was stopped
         SystemClock_Config();
         */
+        std::bitset<24> data = std::bitset<24>(rand() % 0xFFFFFF);
+        display_register.Write(data);
 
-        // Small delay for button debouncing after wakeup
-        HAL_Delay(100);
+        HAL_Delay(1000);
     }
 }
 
@@ -135,6 +145,14 @@ void GPIO_Init(void)
     GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING; // Interrupt on falling edge (button press)
     GPIO_InitStruct.Pull = GPIO_PULLUP;          // Pull-up resistor
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    // OE - PA4
+    GPIO_InitStruct.Pin = GPIO_PIN_4;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET); // OE low - enable output
 
     // Enable EXTI0 interrupt for button
     HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
