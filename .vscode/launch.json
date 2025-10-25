@@ -11,7 +11,9 @@
                 "button",
                 "button_bootloader",
                 "sleep",
-                "sleep_bootloader"
+                "sleep_bootloader",
+                "sw63",
+                "sw63_bootloader"
             ],
             "default": "blink"
         }
