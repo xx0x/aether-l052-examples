@@ -9,7 +9,9 @@
                 "blink",
                 "blink_bootloader",
                 "button",
-                "button_bootloader"
+                "button_bootloader",
+                "sleep",
+                "sleep_bootloader"
             ],
             "default": "blink"
         }
