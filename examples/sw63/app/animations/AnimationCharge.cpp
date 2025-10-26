@@ -3,7 +3,7 @@
 
 uint32_t AnimationCharge::ProcessNextFrame()
 {
-    constexpr uint32_t kTotalSteps = 13; // 12 numbers + 1 full cycle
+    static constexpr uint32_t kTotalSteps = 13; // 12 numbers + 1 full cycle
 
     if (current_step_ >= kTotalSteps)
     {

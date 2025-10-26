@@ -3,7 +3,7 @@
 
 uint32_t AnimationIntro::ProcessNextFrame()
 {
-    constexpr uint32_t kTotalSteps = 20;
+    static constexpr uint32_t kTotalSteps = 20;
 
     if (current_step_ >= kTotalSteps)
     {
