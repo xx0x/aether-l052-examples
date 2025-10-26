@@ -47,6 +47,7 @@ public:
     Language GetLanguage() const;
     FrameSequence GetSequence(TimeType time_type) const;
     TimeParameters ProcessTime(int hh, int mm) const;
+    TimeParameters FixTime(const TimeParameters &params) const;
 
 private:
     TimeCoefficients GetTimeCoefficients() const;

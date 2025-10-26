@@ -51,7 +51,7 @@ void App::DisplayTime()
 {
     // Example time - in real implementation, get from RTC
     int hh = 4;
-    int mm = 40;
+    int mm = 20;
 
     // Use LocaleConfig to process the time and determine animation parameters
     auto time_params = locale.ProcessTime(hh, mm);
