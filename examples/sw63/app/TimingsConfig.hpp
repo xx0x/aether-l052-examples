@@ -7,7 +7,7 @@ class TimingsConfig
 public:
     TimingsConfig()
     {
-        SetSpeed(GetDefaultSpeed());
+        SetSpeed(4);
     }
 
     void SetSpeed(uint32_t speed)
@@ -24,22 +24,20 @@ public:
     {
         return time_hold_;
     }
+
     uint32_t GetHoldDigits() const
     {
         return time_hold_digits_;
     }
+
     uint32_t GetTimePause() const
     {
         return time_pause_;
     }
+
     static uint32_t GetSpeedCount()
     {
         return kSpeedCount;
-    }
-    static uint32_t GetDefaultSpeed()
-    {
-        // Slowest speed by default
-        return 0;
     }
 
 private:

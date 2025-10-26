@@ -6,6 +6,7 @@ set(EXAMPLE_SOURCES
     main.cpp
     app/App.cpp
     app/Display.cpp
+    app/LocaleConfig.cpp
     app/animations/AnimationTime.cpp
     app/animations/AnimationIntro.cpp
     app/animations/AnimationCharge.cpp
