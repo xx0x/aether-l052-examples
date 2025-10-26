@@ -5,19 +5,19 @@ uint32_t AnimationTime::ProcessNextFrame()
 {
     if (sequence_.empty())
     {
-        sequence_ = App::locale.GetSequence(state_.time_params.time_type);
+        sequence_ = App::locale.GetSequence(time_params_.time_type);
     }
-    if (state_.current_step >= sequence_.size())
+    if (current_step_ >= sequence_.size())
     {
-        state_.finished = true;
+        finished_ = true;
         return 0;
     }
 
     App::display.Clear();
-    uint32_t delay_ms = ProcessFrameElement(sequence_[state_.current_step]);
+    uint32_t delay_ms = ProcessFrameElement(sequence_[current_step_]);
     App::display.Update();
 
-    state_.current_step++;
+    current_step_++;
     return delay_ms;
 }
 
@@ -32,16 +32,16 @@ uint32_t AnimationTime::ProcessFrameElement(ClockFrame frame)
     switch (frame)
     {
     case ClockFrame::CLOCKFACE:
-        App::display.SetClockFace(state_.time_params.face);
+        App::display.SetClockFace(time_params_.face);
         return App::timings.GetHold();
     case ClockFrame::HOURS_NUM:
-        App::display.SetNumber(state_.time_params.hours);
+        App::display.SetNumber(time_params_.hours);
         return App::timings.GetHoldDigits();
     case ClockFrame::HOURS:
         App::display.SetTopLed(Display::TopLed::HOURS);
         return App::timings.GetHold();
     case ClockFrame::MINUTES_NUM:
-        App::display.SetNumber(state_.time_params.minutes);
+        App::display.SetNumber(time_params_.minutes);
         return App::timings.GetHoldDigits();
     case ClockFrame::MINUTES:
         App::display.SetTopLed(Display::TopLed::MINUTES);
@@ -53,7 +53,7 @@ uint32_t AnimationTime::ProcessFrameElement(ClockFrame frame)
         App::display.SetTopLed(Display::TopLed::BEFORE);
         return App::timings.GetHold();
     case ClockFrame::PM:
-        if (state_.time_params.pm)
+        if (time_params_.pm)
         {
             App::display.SetPm(true);
             return App::timings.GetHold();

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "app/Display.hpp"
 #include "LocaleConfig.hpp"
+#include "app/Display.hpp"
 #include <cstdint>
 
 class Animation
@@ -15,33 +15,27 @@ public:
         COUNT
     };
 
-    struct AnimationState
-    {
-        LocaleConfig::TimeParameters time_params;
-        uint32_t current_step = 0;
-        bool finished = false;
-    };
+    // Returns delay in milliseconds until next frame
+    virtual uint32_t ProcessNextFrame() = 0;
 
-    virtual ~Animation() = default;
     virtual void Reset()
     {
-        state_.current_step = 0;
-        state_.finished = false;
+        current_step_ = 0;
+        finished_ = false;
     }
 
-    virtual void SetTime(const LocaleConfig::TimeParameters& time_params)
+    void SetTime(const LocaleConfig::TimeParameters &time_params)
     {
-        state_.time_params = time_params;
+        time_params_ = time_params;
     }
 
     bool IsFinished() const
     {
-        return state_.finished;
+        return finished_;
     }
 
-    // Returns delay in milliseconds until next frame
-    virtual uint32_t ProcessNextFrame() = 0;
-
 protected:
-    AnimationState state_;
+    LocaleConfig::TimeParameters time_params_;
+    uint32_t current_step_ = 0;
+    bool finished_ = false;
 };
