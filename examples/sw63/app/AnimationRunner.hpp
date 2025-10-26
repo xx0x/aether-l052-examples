@@ -16,9 +16,7 @@ public:
     AnimationRunner()
     {
         animations_[Animation::Type::INTRO] = std::make_unique<AnimationIntro>();
-        animations_[Animation::Type::EXACT] = std::make_unique<AnimationTime>(AnimationTime::TimeType::EXACT);
-        animations_[Animation::Type::PAST] = std::make_unique<AnimationTime>(AnimationTime::TimeType::PAST);
-        animations_[Animation::Type::TO] = std::make_unique<AnimationTime>(AnimationTime::TimeType::TO);
+        animations_[Animation::Type::TIME] = std::make_unique<AnimationTime>();
         animations_[Animation::Type::CHARGE] = std::make_unique<AnimationCharge>();
     }
 
@@ -31,13 +29,12 @@ public:
         }
     }
 
-    void SetAnimation(Animation::Type type, uint32_t hours, uint32_t minutes,
-                      Display::ClockFace face, bool pm)
+    void SetAnimation(Animation::Type type, const LocaleConfig::TimeParameters& time_params)
     {
         SetAnimation(type);
         if (auto &animation = GetCurrentAnimation())
         {
-            animation->SetTime(hours, minutes, face, pm);
+            animation->SetTime(time_params);
         }
     }
 
@@ -62,9 +59,7 @@ public:
 
     bool IsShowingTime() const
     {
-        return current_type_ == Animation::Type::EXACT ||
-               current_type_ == Animation::Type::TO ||
-               current_type_ == Animation::Type::PAST;
+        return current_type_ == Animation::Type::TIME;
     }
 
     bool ShouldPauseBetweenFrames() const

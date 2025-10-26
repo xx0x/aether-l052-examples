@@ -52,76 +52,13 @@ void App::DisplayTime()
 {
     // Example time - in real implementation, get from RTC
     int hh = 4;
-    int mm = 20;
+    int mm = 40;
 
-    // Get language-specific coefficients
-    auto coefficients = locale.GetTimeCoefficients();
+    // Use LocaleConfig to process the time and determine animation parameters
+    auto time_params = locale.ProcessTime(hh, mm);
 
-    uint32_t minutes = mm;
-    uint32_t hours = hh % 12;
-    bool pm = (hh >= 12);
-
-    // Determine animation type and parameters based on minutes
-    if (minutes == 0)
-    {
-        animation_runner.SetAnimation(Animation::Type::EXACT, hours, 0,
-                                      Display::ClockFace::UP, pm);
-    }
-    else if (minutes < 11)
-    {
-        animation_runner.SetAnimation(Animation::Type::PAST, hours, minutes,
-                                      Display::ClockFace::UP, pm);
-    }
-    else if (minutes < 15)
-    {
-        animation_runner.SetAnimation(Animation::Type::TO, hours + coefficients.after_coef,
-                                      15 - minutes, Display::ClockFace::RIGHT, pm);
-    }
-    else if (minutes == 15)
-    {
-        animation_runner.SetAnimation(Animation::Type::EXACT, hours + coefficients.after_coef,
-                                      0, Display::ClockFace::RIGHT, pm);
-    }
-    else if (minutes < 20)
-    {
-        animation_runner.SetAnimation(Animation::Type::PAST, hours + coefficients.after_coef,
-                                      minutes - 15, Display::ClockFace::RIGHT, pm);
-    }
-    else if (minutes < 30)
-    {
-        animation_runner.SetAnimation(Animation::Type::TO, hours + coefficients.half_coef,
-                                      30 - minutes, Display::ClockFace::DOWN, pm);
-    }
-    else if (minutes == 30)
-    {
-        animation_runner.SetAnimation(Animation::Type::EXACT, hours + coefficients.half_coef,
-                                      0, Display::ClockFace::DOWN, pm);
-    }
-    else if (minutes < 41)
-    {
-        animation_runner.SetAnimation(Animation::Type::PAST, hours + coefficients.half_coef,
-                                      minutes - 30, Display::ClockFace::DOWN, pm);
-    }
-    else if (minutes < 45)
-    {
-        animation_runner.SetAnimation(Animation::Type::TO, hours + coefficients.to_coef,
-                                      45 - minutes, Display::ClockFace::LEFT, pm);
-    }
-    else if (minutes == 45)
-    {
-        animation_runner.SetAnimation(Animation::Type::EXACT, hours + coefficients.to_coef,
-                                      0, Display::ClockFace::LEFT, pm);
-    }
-    else if (minutes < 50)
-    {
-        animation_runner.SetAnimation(Animation::Type::PAST, hours + coefficients.to_coef,
-                                      minutes - 45, Display::ClockFace::LEFT, pm);
-    }
-    else
-    {
-        animation_runner.SetAnimation(Animation::Type::TO, hours + 1,
-                                      60 - minutes, Display::ClockFace::UP, pm);
-    }
+    // Set the time animation with the processed parameters
+    animation_runner.SetAnimation(Animation::Type::TIME, time_params);
 
     // Start the animation
     animation_delay_remaining_ = 0;

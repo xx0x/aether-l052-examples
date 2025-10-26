@@ -20,11 +20,27 @@ public:
         }
     }
 
-    uint32_t GetHold() const { return time_hold_; }
-    uint32_t GetHoldDigits() const { return time_hold_digits_; }
-    uint32_t GetTimePause() const { return time_pause_; }
-    static uint32_t GetSpeedCount() { return kSpeedCount; }
-    static uint32_t GetDefaultSpeed() { return 0; } // Slowest speed by default
+    uint32_t GetHold() const
+    {
+        return time_hold_;
+    }
+    uint32_t GetHoldDigits() const
+    {
+        return time_hold_digits_;
+    }
+    uint32_t GetTimePause() const
+    {
+        return time_pause_;
+    }
+    static uint32_t GetSpeedCount()
+    {
+        return kSpeedCount;
+    }
+    static uint32_t GetDefaultSpeed()
+    {
+        // Slowest speed by default
+        return 0;
+    }
 
 private:
     // Speed configuration arrays (6 speed levels: 0=slowest, 5=fastest)
@@ -32,7 +48,7 @@ private:
     static constexpr uint32_t kHoldDigits[kSpeedCount] = {1000, 800, 600, 400, 300, 150};
     static constexpr uint32_t kHold[kSpeedCount] = {800, 640, 480, 320, 240, 120};
     static constexpr uint32_t kPause[kSpeedCount] = {150, 120, 90, 60, 45, 23};
-    
+
     uint32_t time_hold_ = kHold[0];
     uint32_t time_hold_digits_ = kHoldDigits[0];
     uint32_t time_pause_ = kPause[0];

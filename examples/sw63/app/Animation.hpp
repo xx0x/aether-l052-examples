@@ -1,6 +1,7 @@
 #pragma once
 
 #include "app/Display.hpp"
+#include "LocaleConfig.hpp"
 #include <cstdint>
 
 class Animation
@@ -9,19 +10,14 @@ public:
     enum class Type
     {
         INTRO,
-        EXACT,
-        TO,
-        PAST,
+        TIME,
         CHARGE,
         COUNT
     };
 
     struct AnimationState
     {
-        uint32_t hours = 0;
-        uint32_t minutes = 0;
-        Display::ClockFace face = Display::ClockFace::UP;
-        bool pm = false;
+        LocaleConfig::TimeParameters time_params;
         uint32_t current_step = 0;
         bool finished = false;
     };
@@ -33,16 +29,9 @@ public:
         state_.finished = false;
     }
 
-    virtual void SetTime(uint32_t hours, uint32_t minutes, Display::ClockFace face, bool pm)
+    virtual void SetTime(const LocaleConfig::TimeParameters& time_params)
     {
-        if (hours == 0)
-        {
-            hours = 12;
-        }
-        state_.hours = hours;
-        state_.minutes = minutes;
-        state_.face = face;
-        state_.pm = pm;
+        state_.time_params = time_params;
     }
 
     bool IsFinished() const
