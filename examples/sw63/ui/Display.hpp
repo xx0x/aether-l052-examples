@@ -91,82 +91,38 @@ public:
 
     void SetNumber(size_t number)
     {
-        if (number == 0 || number > 12)
+        for (auto led : kNumLeds)
         {
-            data_.set(static_cast<size_t>(Led::NUM_1), false);
-            data_.set(static_cast<size_t>(Led::NUM_2), false);
-            data_.set(static_cast<size_t>(Led::NUM_3), false);
-            data_.set(static_cast<size_t>(Led::NUM_4), false);
-            data_.set(static_cast<size_t>(Led::NUM_5), false);
-            data_.set(static_cast<size_t>(Led::NUM_6), false);
-            data_.set(static_cast<size_t>(Led::NUM_7), false);
-            data_.set(static_cast<size_t>(Led::NUM_8), false);
-            data_.set(static_cast<size_t>(Led::NUM_9), false);
-            data_.set(static_cast<size_t>(Led::NUM_10), false);
-            data_.set(static_cast<size_t>(Led::NUM_11), false);
-            data_.set(static_cast<size_t>(Led::NUM_12), false);
+            data_.set(static_cast<size_t>(led), false);
+        }
+        if (number == 0 || number > kNumLedCount)
+        {
             return;
         }
 
-        if (num_mode_ == NumMode::BAR)
+        switch (num_mode_)
         {
-            data_.set(static_cast<size_t>(Led::NUM_1), number >= 1);
-            data_.set(static_cast<size_t>(Led::NUM_2), number >= 2);
-            data_.set(static_cast<size_t>(Led::NUM_3), number >= 3);
-            data_.set(static_cast<size_t>(Led::NUM_4), number >= 4);
-            data_.set(static_cast<size_t>(Led::NUM_5), number >= 5);
-            data_.set(static_cast<size_t>(Led::NUM_6), number >= 6);
-            data_.set(static_cast<size_t>(Led::NUM_7), number >= 7);
-            data_.set(static_cast<size_t>(Led::NUM_8), number >= 8);
-            data_.set(static_cast<size_t>(Led::NUM_9), number >= 9);
-            data_.set(static_cast<size_t>(Led::NUM_10), number >= 10);
-            data_.set(static_cast<size_t>(Led::NUM_11), number >= 11);
-            data_.set(static_cast<size_t>(Led::NUM_12), number >= 12);
-        }
-        else if (num_mode_ == NumMode::BAR_REVERSED)
-        {
-            data_.set(static_cast<size_t>(Led::NUM_12), number >= 1);
-            data_.set(static_cast<size_t>(Led::NUM_11), number >= 2);
-            data_.set(static_cast<size_t>(Led::NUM_10), number >= 3);
-            data_.set(static_cast<size_t>(Led::NUM_9), number >= 4);
-            data_.set(static_cast<size_t>(Led::NUM_8), number >= 5);
-            data_.set(static_cast<size_t>(Led::NUM_7), number >= 6);
-            data_.set(static_cast<size_t>(Led::NUM_6), number >= 7);
-            data_.set(static_cast<size_t>(Led::NUM_5), number >= 8);
-            data_.set(static_cast<size_t>(Led::NUM_4), number >= 9);
-            data_.set(static_cast<size_t>(Led::NUM_3), number >= 10);
-            data_.set(static_cast<size_t>(Led::NUM_2), number >= 11);
-            data_.set(static_cast<size_t>(Led::NUM_1), number >= 12);
-        }
-        else if (num_mode_ == NumMode::SINGLE)
-        {
-            data_.set(static_cast<size_t>(Led::NUM_1), number == 1);
-            data_.set(static_cast<size_t>(Led::NUM_2), number == 2);
-            data_.set(static_cast<size_t>(Led::NUM_3), number == 3);
-            data_.set(static_cast<size_t>(Led::NUM_4), number == 4);
-            data_.set(static_cast<size_t>(Led::NUM_5), number == 5);
-            data_.set(static_cast<size_t>(Led::NUM_6), number == 6);
-            data_.set(static_cast<size_t>(Led::NUM_7), number == 7);
-            data_.set(static_cast<size_t>(Led::NUM_8), number == 8);
-            data_.set(static_cast<size_t>(Led::NUM_9), number == 9);
-            data_.set(static_cast<size_t>(Led::NUM_10), number == 10);
-            data_.set(static_cast<size_t>(Led::NUM_11), number == 11);
-            data_.set(static_cast<size_t>(Led::NUM_12), number == 12);
-        }
-        else if (num_mode_ == NumMode::SINGLE_REVERSED)
-        {
-            data_.set(static_cast<size_t>(Led::NUM_12), number == 1);
-            data_.set(static_cast<size_t>(Led::NUM_11), number == 2);
-            data_.set(static_cast<size_t>(Led::NUM_10), number == 3);
-            data_.set(static_cast<size_t>(Led::NUM_9), number == 4);
-            data_.set(static_cast<size_t>(Led::NUM_8), number == 5);
-            data_.set(static_cast<size_t>(Led::NUM_7), number == 6);
-            data_.set(static_cast<size_t>(Led::NUM_6), number == 7);
-            data_.set(static_cast<size_t>(Led::NUM_5), number == 8);
-            data_.set(static_cast<size_t>(Led::NUM_4), number == 9);
-            data_.set(static_cast<size_t>(Led::NUM_3), number == 10);
-            data_.set(static_cast<size_t>(Led::NUM_2), number == 11);
-            data_.set(static_cast<size_t>(Led::NUM_1), number == 12);
+        case NumMode::SINGLE:
+            data_.set(static_cast<size_t>(kNumLeds[number - 1]), true);
+            break;
+
+        case NumMode::SINGLE_REVERSED:
+            data_.set(static_cast<size_t>(kRevNumLeds[number - 1]), true);
+            break;
+
+        case NumMode::BAR:
+            for (size_t i = 0; i < number; ++i)
+            {
+                data_.set(static_cast<size_t>(kNumLeds[i]), true);
+            }
+            break;
+
+        case NumMode::BAR_REVERSED:
+            for (size_t i = 0; i < number; ++i)
+            {
+                data_.set(static_cast<size_t>(kRevNumLeds[i]), true);
+            }
+            break;
         }
     }
 
@@ -209,6 +165,7 @@ public:
     }
 
 private:
+    // Change this based on the actual LED wiring
     enum class Led
     {
         LEFT,
@@ -237,10 +194,21 @@ private:
         NUM_5,
     };
 
-    static constexpr size_t kNumLeds = 24;
-    std::bitset<kNumLeds> data_;
-    ShiftRegister<kNumLeds> display_register_;
+    static constexpr size_t kLedCount = 24;
+    std::bitset<kLedCount> data_;
+    ShiftRegister<kLedCount> display_register_;
     PwmBrightness brightness_;
 
+    static constexpr size_t kNumLedCount = 12;
     NumMode num_mode_ = NumMode::BAR_REVERSED;
+
+    // Lookup tables for different modes
+    // Don't change the order of these arrays.
+    static constexpr Led kNumLeds[kNumLedCount] = {
+        Led::NUM_1, Led::NUM_2, Led::NUM_3, Led::NUM_4, Led::NUM_5, Led::NUM_6,
+        Led::NUM_7, Led::NUM_8, Led::NUM_9, Led::NUM_10, Led::NUM_11, Led::NUM_12};
+
+    static constexpr Led kRevNumLeds[kNumLedCount] = {
+        Led::NUM_12, Led::NUM_11, Led::NUM_10, Led::NUM_9, Led::NUM_8, Led::NUM_7,
+        Led::NUM_6, Led::NUM_5, Led::NUM_4, Led::NUM_3, Led::NUM_2, Led::NUM_1};
 };
