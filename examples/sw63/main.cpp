@@ -1,8 +1,7 @@
 #include "stm32l0xx_hal.h"
 #include "stm32l052xx.h"
 #include <bitset>
-#include "dev/ShiftRegister.hpp"
-#include "dev/PwmBrightness.hpp"
+#include "ui/Display.hpp"
 
 // Global variables
 volatile bool button_just_pressed = false;
@@ -34,17 +33,9 @@ int main(void)
     // Initialize GPIO
     GPIO_Init();
 
-    // Initialize PWM brightness control
-    PwmBrightness pwm_brightness;
-    pwm_brightness.Init();
-
-    // Shift register for LEDs
-    ShiftRegister<24> display_register;
-    display_register.Init({
-        .data = {GPIOA, GPIO_PIN_7},  // MOSI - PA7
-        .clock = {GPIOA, GPIO_PIN_5}, // SCK - PA5
-        .latch = {GPIOA, GPIO_PIN_8}  // LATCH - PA8
-    });
+    // Initialize Display
+    Display display;
+    display.Init();
 
     // Main loop
     while (1)
@@ -54,22 +45,23 @@ int main(void)
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
 
         // Display random pattern on LEDs
-        std::bitset<24> data = std::bitset<24>(rand() % 0xFFFFFF);
-        display_register.Write(data);
+        // std::bitset<24> data = std::bitset<24>(rand() % 0xFFFFFF);
+        // display_register.Write(data);
+        display.TestProcedure();
 
-        // Demonstrate brightness ramping from dim to bright
-        for (int brightness = 0; brightness <= pwm_brightness.kResolution; brightness += 5)
-        {
-            pwm_brightness.Set(brightness);
-            HAL_Delay(5);
-        }
+        //// Demonstrate brightness ramping from dim to bright
+        // for (int brightness = 0; brightness <= Display::kMaxBrightness; brightness += 5)
+        //{
+        //     display.SetBrightness(brightness);
+        //     HAL_Delay(5);
+        // }
 
-        // Ramp down from bright to dim
-        for (int brightness = pwm_brightness.kResolution; brightness >= 0; brightness -= 5)
-        {
-            pwm_brightness.Set(brightness);
-            HAL_Delay(5);
-        }
+        //// Ramp down from bright to dim
+        // for (int brightness = Display::kMaxBrightness; brightness >= 0; brightness -= 5)
+        //{
+        //     display.SetBrightness(brightness);
+        //     HAL_Delay(5);
+        // }
 
         HAL_Delay(500);
     }
