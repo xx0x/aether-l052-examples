@@ -97,6 +97,8 @@ void Display::SetLed(Led led, bool on)
 
 void Display::TestProcedure()
 {
+    // Just for the development!!!
+    // The intro animation is something different
     for (int i = 0; i <= 12; i++)
     {
         Clear();
