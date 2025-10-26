@@ -4,6 +4,8 @@ set(EXAMPLE_NAME sw63)
 # Example-specific sources (relative to this directory)
 set(EXAMPLE_SOURCES
     main.cpp
+    app/App.cpp
+    app/Display.cpp
 )
 
 # Example-specific HAL dependencies

@@ -1,7 +1,7 @@
 #include "stm32l0xx_hal.h"
 #include "stm32l052xx.h"
 #include <bitset>
-#include "ui/Display.hpp"
+#include "app/App.hpp"
 
 // Global variables
 volatile bool button_just_pressed = false;
@@ -33,9 +33,9 @@ int main(void)
     // Initialize GPIO
     GPIO_Init();
 
-    // Initialize Display
-    Display display;
-    display.Init();
+    // Initialize App
+    App app;
+    app.Init();
 
     // Main loop
     while (1)
@@ -44,26 +44,7 @@ int main(void)
         button_just_pressed = false;
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
 
-        // Display random pattern on LEDs
-        // std::bitset<24> data = std::bitset<24>(rand() % 0xFFFFFF);
-        // display_register.Write(data);
-        display.TestProcedure();
-
-        //// Demonstrate brightness ramping from dim to bright
-        // for (int brightness = 0; brightness <= Display::kMaxBrightness; brightness += 5)
-        //{
-        //     display.SetBrightness(brightness);
-        //     HAL_Delay(5);
-        // }
-
-        //// Ramp down from bright to dim
-        // for (int brightness = Display::kMaxBrightness; brightness >= 0; brightness -= 5)
-        //{
-        //     display.SetBrightness(brightness);
-        //     HAL_Delay(5);
-        // }
-
-        HAL_Delay(500);
+        app.Loop();
     }
 }
 
