@@ -2,10 +2,10 @@
 
 void App::Init()
 {
-    display_.Init();
+    display.Init();
 }
 
 void App::Loop()
 {
-    display_.TestProcedure();
+    display.TestProcedure();
 }

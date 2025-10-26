@@ -34,8 +34,7 @@ int main(void)
     GPIO_Init();
 
     // Initialize App
-    App app;
-    app.Init();
+    App::Init();
 
     // Main loop
     while (1)
@@ -44,7 +43,7 @@ int main(void)
         button_just_pressed = false;
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
 
-        app.Loop();
+        App::Loop();
     }
 }
 

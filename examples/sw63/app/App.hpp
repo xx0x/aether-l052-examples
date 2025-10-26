@@ -5,9 +5,8 @@
 class App
 {
 public:
-    void Init();
-    void Loop();
+    static void Init();
+    static void Loop();
 
-private:
-    Display display_;
+    inline static Display display;
 };
