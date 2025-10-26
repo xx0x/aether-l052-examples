@@ -1,53 +1,51 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 
 class TimingsConfig
 {
 public:
+    struct Speed
+    {
+        uint32_t hold;
+        uint32_t hold_digits;
+        uint32_t pause;
+    };
+
     TimingsConfig()
     {
-        SetSpeed(4);
+        SetSpeed(0);
     }
 
     void SetSpeed(uint32_t speed)
     {
         if (speed < kSpeedCount)
         {
-            time_hold_ = kHold[speed];
-            time_hold_digits_ = kHoldDigits[speed];
-            time_pause_ = kPause[speed];
+            speed_index_ = speed;
         }
     }
 
-    uint32_t GetHold() const
+    Speed GetSpeed() const
     {
-        return time_hold_;
+        return kSpeeds[speed_index_];
     }
 
-    uint32_t GetHoldDigits() const
-    {
-        return time_hold_digits_;
-    }
-
-    uint32_t GetTimePause() const
-    {
-        return time_pause_;
-    }
-
-    static uint32_t GetSpeedCount()
+    static constexpr size_t GetSpeedCount()
     {
         return kSpeedCount;
     }
 
 private:
-    // Speed configuration arrays (6 speed levels: 0=slowest, 5=fastest)
-    static constexpr uint32_t kSpeedCount = 6;
-    static constexpr uint32_t kHoldDigits[kSpeedCount] = {1000, 800, 600, 400, 300, 150};
-    static constexpr uint32_t kHold[kSpeedCount] = {800, 640, 480, 320, 240, 120};
-    static constexpr uint32_t kPause[kSpeedCount] = {150, 120, 90, 60, 45, 23};
+    // Speed configuration arrays (slowest to fastest)
+    static constexpr std::array kSpeeds = {
+        Speed{.hold = 1000, .hold_digits = 1000, .pause = 150},
+        Speed{.hold = 800, .hold_digits = 800, .pause = 120},
+        Speed{.hold = 600, .hold_digits = 600, .pause = 90},
+        Speed{.hold = 400, .hold_digits = 400, .pause = 60},
+        Speed{.hold = 300, .hold_digits = 300, .pause = 45},
+        Speed{.hold = 150, .hold_digits = 150, .pause = 23}};
 
-    uint32_t time_hold_ = kHold[0];
-    uint32_t time_hold_digits_ = kHoldDigits[0];
-    uint32_t time_pause_ = kPause[0];
+    static constexpr size_t kSpeedCount = kSpeeds.size();
+    size_t speed_index_ = 0;
 };

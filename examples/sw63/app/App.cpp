@@ -22,28 +22,27 @@ void App::Loop()
             {
                 display.Clear();
                 display.Update();
-                HAL_Delay(timings.GetTimePause());
+                HAL_Delay(timings.GetSpeed().pause);
             }
 
+            // Process the next frame and get the delay until the next update
             animation_delay_remaining_ = animation_runner.ProcessNextFrame();
             last_animation_update_ = HAL_GetTick();
 
+            // If the animation finished, clear the display
             if (animation_runner.IsFinished())
             {
                 display.Clear();
                 display.Update();
-                HAL_Delay(1000); // sleep here in the future
             }
         }
     }
     else
     {
-        // Animation finished, display time again after a delay
-        static uint32_t last_time_display = 0;
-        if (current_time >= last_time_display + 2000) // Display time every 2 seconds
+        // Display time every 2 seconds
+        if (HAL_GetTick() - last_animation_update_ >= 2000)
         {
             DisplayTime();
-            last_time_display = current_time;
         }
     }
 }
