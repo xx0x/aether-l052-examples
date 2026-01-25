@@ -15,6 +15,10 @@ public:
     static void I2cInit();
     static void ErrorHandler();
     static void Sleep();
+    static inline void Delay(uint32_t ms)
+    {
+        HAL_Delay(ms);
+    }
 
 private:
     System() = delete; // Prevent instantiation

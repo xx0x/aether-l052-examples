@@ -1,13 +1,12 @@
 #pragma once
 
 #include "app/AnimationRunner.hpp"
-#include "app/Battery.hpp"
-#include "app/Display.hpp"
 #include "app/LocaleConfig.hpp"
 #include "app/TimingsConfig.hpp"
+#include "dev/Battery.hpp"
 #include "dev/DS3231.hpp"
+#include "dev/Display.hpp"
 #include "dev/System.hpp"
-#include "stm32l0xx_hal.h"
 #include <cstdint>
 
 class App

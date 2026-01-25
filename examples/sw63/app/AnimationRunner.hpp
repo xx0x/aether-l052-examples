@@ -5,7 +5,7 @@
 #include "animations/AnimationCharge.hpp"
 #include "animations/AnimationIntro.hpp"
 #include "animations/AnimationTime.hpp"
-#include "app/Display.hpp"
+#include "dev/Display.hpp"
 #include "lib/EnumTools.hpp"
 #include <array>
 #include <memory>
@@ -29,7 +29,7 @@ public:
         }
     }
 
-    void SetAnimation(Animation::Type type, const LocaleConfig::TimeParameters& time_params)
+    void SetAnimation(Animation::Type type, const LocaleConfig::TimeParameters &time_params)
     {
         SetAnimation(type);
         if (auto &animation = GetCurrentAnimation())

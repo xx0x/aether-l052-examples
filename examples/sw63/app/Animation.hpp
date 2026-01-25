@@ -1,7 +1,6 @@
 #pragma once
 
 #include "LocaleConfig.hpp"
-#include "app/Display.hpp"
 #include <cstdint>
 
 class Animation

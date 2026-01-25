@@ -1,7 +1,7 @@
 #pragma once
 
 #include "animations/ClockFrame.hpp"
-#include "app/Display.hpp"
+#include "dev/Display.hpp"
 
 class LocaleConfig
 {

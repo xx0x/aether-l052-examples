@@ -1,6 +1,5 @@
 #include "App.hpp"
 #include "dev/System.hpp"
-#include "stm32l0xx_hal.h"
 
 void App::Init()
 {
@@ -14,11 +13,11 @@ void App::Init()
             display.Clear();
             display.SetPm(true); // Indicate error with PM LED
             display.Update();
-            HAL_Delay(500);
+            System::Delay(500);
             display.Clear();
             display.SetPm(false);
             display.Update();
-            HAL_Delay(500);
+            System::Delay(500);
         }
     }
     // Set test date (we don't care about the date here, just time)
@@ -46,7 +45,7 @@ void App::Loop()
             {
                 display.Clear();
                 display.Update();
-                HAL_Delay(timings.GetSpeed().pause);
+                System::Delay(timings.GetSpeed().pause);
             }
 
             // Update display brightness based on ambient light (the lights need to be off to read it properly)
@@ -107,11 +106,11 @@ void App::Sleep()
 {
 
 
-    // show battery level before sleep
+    // Show battery level before sleep
     float battery_level = battery.GetLevel();
     display.SetNumber(battery_level * 12.f);
     display.Update();
-    HAL_Delay(1000);
+    System::Delay(1000);
 
 
     display.DeInit();
@@ -123,5 +122,5 @@ void App::Sleep()
     battery.Init();
 
     // Small delay for button debouncing after wakeup
-    HAL_Delay(50);
+    System::Delay(50);
 }

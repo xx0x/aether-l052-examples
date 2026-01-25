@@ -7,16 +7,6 @@
 
 class Battery
 {
-private:
-    // Voltage divider resistors (in ohms)
-    static constexpr float R1 = 100000.0f; // 100kΩ (high side)
-    static constexpr float R2 = 220000.0f; // 220kΩ (low side to ground)
-
-    // Voltage divider ratio (measurement point voltage / battery voltage)
-    static constexpr float VOLTAGE_DIVIDER_RATIO = R2 / (R1 + R2);
-
-    // Internal voltage reference specifications for STM32L0
-    static constexpr float VREFINT_VOLTAGE = 1.224f; // Typical VREFINT voltage in volts
 
 public:
     void Init()
@@ -95,6 +85,16 @@ public:
     }
 
 private:
+    // Voltage divider resistors (in ohms)
+    static constexpr float R1 = 100000.0f; // 100kΩ (high side)
+    static constexpr float R2 = 220000.0f; // 220kΩ (low side to ground)
+
+    // Voltage divider ratio (measurement point voltage / battery voltage)
+    static constexpr float VOLTAGE_DIVIDER_RATIO = R2 / (R1 + R2);
+
+    // Internal voltage reference specifications for STM32L0
+    static constexpr float VREFINT_VOLTAGE = 1.224f; // Typical VREFINT voltage in volts
+
     float GetActualVref()
     {
         // Read the internal voltage reference
