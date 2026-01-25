@@ -16,13 +16,14 @@ LocaleConfig::TimeCoefficients LocaleConfig::GetTimeCoefficients() const
     {
     case Language::CZECH:
     case Language::HUNGARIAN:
-        return {1, 1, 1};
+        return {.first_quarter = 1, .half = 1, .third_quarter = 1};
     case Language::GERMAN:
     case Language::POLISH:
-        return {0, 1, 1};
+    case Language::NORWEGIAN:
+        return {.first_quarter = 0, .half = 1, .third_quarter = 1};
     case Language::ENGLISH:
     default:
-        return {0, 0, 1};
+        return {.first_quarter = 0, .half = 0, .third_quarter = 1};
     }
 }
 
@@ -40,6 +41,13 @@ FrameSequence LocaleConfig::GetSequence(TimeType time_type) const
         case Language::HUNGARIAN:
             return {ClockFrame::AFTER, ClockFrame::MINUTES_NUM, ClockFrame::MINUTES,
                     ClockFrame::CLOCKFACE, ClockFrame::HOURS_NUM, ClockFrame::HOURS, ClockFrame::PM};
+        case Language::NORWEGIAN:
+            return {ClockFrame::MINUTES_NUM, ClockFrame::MINUTES, ClockFrame::AFTER,
+                    ClockFrame::CLOCKFACE, ClockFrame::HOURS_NUM, ClockFrame::HOURS, ClockFrame::PM};
+        case Language::CZECH:
+        case Language::POLISH:
+        case Language::ENGLISH:
+        case Language::GERMAN:
         default:
             return {ClockFrame::CLOCKFACE, ClockFrame::HOURS_NUM, ClockFrame::HOURS,
                     ClockFrame::AFTER, ClockFrame::MINUTES_NUM, ClockFrame::MINUTES, ClockFrame::PM};
@@ -52,6 +60,10 @@ FrameSequence LocaleConfig::GetSequence(TimeType time_type) const
         case Language::POLISH:
             return {ClockFrame::BEFORE, ClockFrame::MINUTES_NUM, ClockFrame::MINUTES,
                     ClockFrame::CLOCKFACE, ClockFrame::HOURS_NUM, ClockFrame::HOURS, ClockFrame::PM};
+        case Language::HUNGARIAN:
+        case Language::ENGLISH:
+        case Language::GERMAN:
+        case Language::NORWEGIAN:
         default:
             return {ClockFrame::MINUTES_NUM, ClockFrame::MINUTES, ClockFrame::BEFORE,
                     ClockFrame::CLOCKFACE, ClockFrame::HOURS_NUM, ClockFrame::HOURS, ClockFrame::PM};
@@ -95,39 +107,39 @@ LocaleConfig::TimeParameters LocaleConfig::ProcessTime(const uint32_t hours, con
     }
     else if (minutes < 15)
     {
-        return FixTime({TimeType::TO, hours12 + coefficients.after_coef, 15 - minutes, Display::ClockFace::RIGHT, pm});
+        return FixTime({TimeType::TO, hours12 + coefficients.first_quarter, 15 - minutes, Display::ClockFace::RIGHT, pm});
     }
     else if (minutes == 15)
     {
-        return FixTime({TimeType::EXACT, hours12 + coefficients.after_coef, 0, Display::ClockFace::RIGHT, pm});
+        return FixTime({TimeType::EXACT, hours12 + coefficients.first_quarter, 0, Display::ClockFace::RIGHT, pm});
     }
     else if (minutes < 20)
     {
-        return FixTime({TimeType::PAST, hours12 + coefficients.after_coef, minutes - 15, Display::ClockFace::RIGHT, pm});
+        return FixTime({TimeType::PAST, hours12 + coefficients.first_quarter, minutes - 15, Display::ClockFace::RIGHT, pm});
     }
     else if (minutes < 30)
     {
-        return FixTime({TimeType::TO, hours12 + coefficients.half_coef, 30 - minutes, Display::ClockFace::DOWN, pm});
+        return FixTime({TimeType::TO, hours12 + coefficients.half, 30 - minutes, Display::ClockFace::DOWN, pm});
     }
     else if (minutes == 30)
     {
-        return FixTime({TimeType::EXACT, hours12 + coefficients.half_coef, 0, Display::ClockFace::DOWN, pm});
+        return FixTime({TimeType::EXACT, hours12 + coefficients.half, 0, Display::ClockFace::DOWN, pm});
     }
     else if (minutes < 41)
     {
-        return FixTime({TimeType::PAST, hours12 + coefficients.half_coef, minutes - 30, Display::ClockFace::DOWN, pm});
+        return FixTime({TimeType::PAST, hours12 + coefficients.half, minutes - 30, Display::ClockFace::DOWN, pm});
     }
     else if (minutes < 45)
     {
-        return FixTime({TimeType::TO, hours12 + coefficients.to_coef, 45 - minutes, Display::ClockFace::LEFT, pm});
+        return FixTime({TimeType::TO, hours12 + coefficients.third_quarter, 45 - minutes, Display::ClockFace::LEFT, pm});
     }
     else if (minutes == 45)
     {
-        return FixTime({TimeType::EXACT, hours12 + coefficients.to_coef, 0, Display::ClockFace::LEFT, pm});
+        return FixTime({TimeType::EXACT, hours12 + coefficients.third_quarter, 0, Display::ClockFace::LEFT, pm});
     }
     else if (minutes < 50)
     {
-        return FixTime({TimeType::PAST, hours12 + coefficients.to_coef, minutes - 45, Display::ClockFace::LEFT, pm});
+        return FixTime({TimeType::PAST, hours12 + coefficients.third_quarter, minutes - 45, Display::ClockFace::LEFT, pm});
     }
     else
     {

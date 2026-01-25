@@ -15,11 +15,12 @@ public:
      */
     enum class Language
     {
-        CZECH,
+        CZECH, // Also works for: SLOVAK, EAST GERMAN
         ENGLISH,
-        GERMAN,
+        GERMAN, // Also works for: DUTCH
         POLISH,
         HUNGARIAN,
+        NORWEGIAN, // Also works for: DANISH, SWEDISH, FINNISH
         COUNT
     };
 
@@ -28,9 +29,9 @@ public:
      */
     struct TimeCoefficients
     {
-        uint32_t after_coef; // how "quarter after" modifies hours
-        uint32_t half_coef;  // how "half past" modifies hours
-        uint32_t to_coef;    // how "quarter to" modifies hours
+        uint32_t first_quarter; // how "quarter after/quarter of" modifies hours
+        uint32_t half;          // how "half past/half of" modifies hours
+        uint32_t third_quarter; // how "quarter to/three quarters of" modifies hours
     };
 
     /**
