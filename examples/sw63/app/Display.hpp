@@ -91,6 +91,8 @@ private:
     static constexpr size_t kLedCount = 24;
     static constexpr size_t kNumLedCount = 12;
 
+    static constexpr Pin kDisplayEnablePin = {GPIOA, GPIO_PIN_1};
+
     std::bitset<kLedCount> data_;
     ShiftRegister<kLedCount> display_register_;
     PwmBrightness brightness_;

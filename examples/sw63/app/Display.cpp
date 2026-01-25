@@ -2,6 +2,17 @@
 
 void Display::Init()
 {
+    // Enable display power (PA1)
+    GPIO_InitTypeDef GPIO_InitStruct = {
+        .Pin = kDisplayEnablePin.pin,
+        .Mode = GPIO_MODE_OUTPUT_PP,
+        .Pull = GPIO_NOPULL,
+        .Speed = GPIO_SPEED_LOW,
+    };
+    HAL_GPIO_Init(kDisplayEnablePin.port, &GPIO_InitStruct);
+    Pin::EnablePort(kDisplayEnablePin);
+    HAL_GPIO_WritePin(kDisplayEnablePin.port, kDisplayEnablePin.pin, GPIO_PIN_SET); 
+
     // Initialize PWM brightness control
     brightness_.Init();
 
@@ -21,6 +32,9 @@ void Display::DeInit()
 {
     brightness_.DeInit();
     display_register_.DeInit();
+
+    // Disable display power (PA1)
+    HAL_GPIO_DeInit(kDisplayEnablePin.port, kDisplayEnablePin.pin);
 }
 
 void Display::SetBrightness(uint16_t brightness)
