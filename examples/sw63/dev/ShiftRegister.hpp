@@ -2,8 +2,8 @@
 
 #include <bitset>
 
-#include "stm32l0xx_hal.h"
 #include "Pin.hpp"
+#include "stm32l0xx_hal.h"
 
 template <size_t N>
 class ShiftRegister
@@ -42,6 +42,19 @@ public:
         Pin::EnablePort(config_.latch);
 
         initialized_ = true;
+        return true;
+    }
+
+    bool DeInit()
+    {
+        if (!initialized_)
+        {
+            return false;
+        }
+        HAL_GPIO_DeInit(config_.data.port, config_.data.pin);
+        HAL_GPIO_DeInit(config_.clock.port, config_.clock.pin);
+        HAL_GPIO_DeInit(config_.latch.port, config_.latch.pin);
+        initialized_ = false;
         return true;
     }
 

@@ -17,6 +17,12 @@ void Display::Init()
     Update();
 }
 
+void Display::DeInit()
+{
+    brightness_.DeInit();
+    display_register_.DeInit();
+}
+
 void Display::SetBrightness(uint16_t brightness)
 {
     brightness_.Set(brightness);

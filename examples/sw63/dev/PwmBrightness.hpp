@@ -80,6 +80,18 @@ public:
         return true;
     }
 
+    bool DeInit()
+    {
+        if (!initialized_)
+        {
+            return false;
+        }
+        HAL_TIM_PWM_Stop(&htim_, TIM_CHANNEL_1);
+        HAL_TIM_PWM_DeInit(&htim_);
+        initialized_ = false;
+        return true;
+    }
+
     /**
      * @brief Sets brightness level from 0 to PwmBrightness::kResolution
      * @param brightness Brightness level (0 = minimum, PwmBrightness::kResolution = full brightness)

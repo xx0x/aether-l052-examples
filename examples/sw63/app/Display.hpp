@@ -67,6 +67,8 @@ public:
 
     void Init();
 
+    void DeInit();
+
     void SetBrightness(uint16_t brightness);
 
     void Clear();

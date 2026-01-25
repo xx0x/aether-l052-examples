@@ -98,7 +98,11 @@ void App::StartIntroAnimation()
 
 void App::Sleep()
 {
+    display.DeInit();
+
     System::Sleep();
+
+    display.Init();
 
     // Small delay for button debouncing after wakeup
     HAL_Delay(50);
