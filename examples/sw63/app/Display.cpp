@@ -3,8 +3,9 @@
 
 void Display::Init()
 {
-
+    // Enable display power
     SetPower(true);
+
     // Initialize PWM brightness control
     brightness_.Init();
 
@@ -12,7 +13,9 @@ void Display::Init()
     ambient_light_.Init({.port = GPIOA,
                          .pin = GPIO_PIN_2,
                          .channel = ADC_CHANNEL_2});
-    UpdateBrightness();
+
+    // Set initial brightness based on ambient light
+    TriggerAutoBrightness();
 
     // Shift register for LEDs
     display_register_.Init({
@@ -21,7 +24,10 @@ void Display::Init()
         .latch = {GPIOA, GPIO_PIN_8}  // LATCH - PA8
     });
 
+    // Clear display state
     Clear();
+
+    // Update display
     Update();
 }
 
@@ -33,10 +39,10 @@ void Display::SetPower(bool on)
             .Pin = kDisplayEnablePin.pin,
             .Mode = GPIO_MODE_OUTPUT_PP,
             .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_LOW,
+            .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
         };
         HAL_GPIO_Init(kDisplayEnablePin.port, &GPIO_InitStruct);
-        HAL_GPIO_WritePin(kDisplayEnablePin.port, kDisplayEnablePin.pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(kDisplayEnablePin.port, kDisplayEnablePin.pin, GPIO_PIN_SET);
     }
     else
     {
@@ -52,12 +58,7 @@ void Display::DeInit()
     SetPower(false);
 }
 
-void Display::SetBrightness(uint16_t brightness)
-{
-    brightness_.Set(brightness);
-}
-
-void Display::UpdateBrightness()
+void Display::TriggerAutoBrightness()
 {
     // Read ambient light from PA02 (ADC channel 2)
     uint16_t ambient_reading = ambient_light_.ReadSingleShot();
@@ -67,7 +68,7 @@ void Display::UpdateBrightness()
     uint16_t mapped_brightness = map(ambient_reading, 0, AdcInput::kResolution, 1, kMaxBrightness);
 
     // Set the brightness
-    SetBrightness(mapped_brightness);
+    brightness_.Set(mapped_brightness);
 }
 
 void Display::Clear()

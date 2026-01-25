@@ -23,6 +23,9 @@ void App::Init()
     // Set test date (we don't care about the date here, just time)
     rtc.SetDateTime({0, 45, 13, 1, 18, 8, 2025});
 
+    // Set default speed
+    timings.SetSpeed(0);
+
     DisplayTime();
     // display.TestProcedure();
 }
@@ -46,7 +49,7 @@ void App::Loop()
             }
 
             // Update display brightness based on ambient light (the lights need to be off to read it properly)
-            display.UpdateBrightness();
+            display.TriggerAutoBrightness();
 
             // Process the next frame and get the delay until the next update
             animation_delay_remaining_ = animation_runner.ProcessNextFrame();

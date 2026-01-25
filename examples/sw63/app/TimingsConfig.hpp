@@ -13,11 +13,6 @@ public:
         uint32_t pause;
     };
 
-    TimingsConfig()
-    {
-        SetSpeed(0);
-    }
-
     void SetSpeed(uint32_t speed)
     {
         if (speed < kSpeedCount)

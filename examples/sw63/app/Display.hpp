@@ -1,8 +1,8 @@
 #pragma once
 
-#include "dev/ShiftRegister.hpp"
-#include "dev/PwmBrightness.hpp"
 #include "dev/AdcInput.hpp"
+#include "dev/PwmBrightness.hpp"
+#include "dev/ShiftRegister.hpp"
 #include "lib/EnumTools.hpp"
 
 class Display
@@ -66,15 +66,11 @@ public:
         COUNT
     };
 
-    void SetPower(bool on);
-
     void Init();
 
     void DeInit();
 
-    void SetBrightness(uint16_t brightness);
-
-    void UpdateBrightness();
+    void TriggerAutoBrightness();
 
     void Clear();
 
@@ -89,10 +85,12 @@ public:
     void SetNumber(size_t number);
 
     void SetLed(Led led, bool on);
-    
+
     void TestProcedure();
 
 private:
+    void SetPower(bool on);
+
     static constexpr size_t kLedCount = 24;
     static constexpr size_t kNumLedCount = 12;
 
