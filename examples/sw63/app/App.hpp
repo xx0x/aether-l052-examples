@@ -1,6 +1,7 @@
 #pragma once
 
 #include "app/AnimationRunner.hpp"
+#include "app/Battery.hpp"
 #include "app/Display.hpp"
 #include "app/LocaleConfig.hpp"
 #include "app/TimingsConfig.hpp"
@@ -16,7 +17,6 @@ public:
     static void Loop();
 
     static void DisplayTime();
-    static void SetSpeed(uint32_t speed) { timings.SetSpeed(speed); }
     static void StartIntroAnimation();
 
     inline static Display display;
@@ -24,6 +24,7 @@ public:
     inline static LocaleConfig locale;
     inline static AnimationRunner animation_runner;
     inline static DS3231 rtc = DS3231(&System::hi2c1);
+    inline static Battery battery;
 
 private:
     static void Sleep();

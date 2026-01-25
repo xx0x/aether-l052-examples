@@ -5,6 +5,7 @@
 void App::Init()
 {
     display.Init();
+    battery.Init();
     auto rtc_success = rtc.Init();
     if (!rtc_success)
     {
@@ -33,6 +34,15 @@ void App::Init()
 void App::Loop()
 {
     uint32_t current_time = HAL_GetTick();
+
+    display.TriggerAutoBrightness();
+
+    auto battery_level = battery.GetLevel();
+     display.Clear();
+     display.SetNumber(battery_level * 12.0f);
+        display.Update();
+        HAL_Delay(10);
+    return;
 
     // Process animations if one is active
     if (!animation_runner.IsFinished())
@@ -105,10 +115,12 @@ void App::StartIntroAnimation()
 void App::Sleep()
 {
     display.DeInit();
+    battery.DeInit();
 
     System::Sleep();
 
     display.Init();
+    battery.Init();
 
     // Small delay for button debouncing after wakeup
     HAL_Delay(50);
