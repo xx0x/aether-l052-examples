@@ -10,6 +10,7 @@ set(EXAMPLE_SOURCES
     app/animations/AnimationTime.cpp
     app/animations/AnimationIntro.cpp
     app/animations/AnimationCharge.cpp
+    dev/DS3231.cpp
 )
 
 # Example-specific HAL dependencies
@@ -25,6 +26,8 @@ set(EXAMPLE_HAL_SOURCES
     ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_rcc.c
     ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_rcc_ex.c
     ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_tim.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_i2c.c
+    ${HAL_DRIVER_PATH}/Src/stm32l0xx_hal_i2c_ex.c
 )
 
 # Example-specific includes (relative to this directory) 

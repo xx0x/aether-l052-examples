@@ -5,10 +5,12 @@
 
 // Global variables
 volatile bool button_just_pressed = false;
+I2C_HandleTypeDef hi2c1;
 
 // Function prototypes
 void SystemClock_Config(void);
 void GPIO_Init(void);
+void I2C_Init(void);
 void Error_Handler(void);
 
 /**
@@ -32,6 +34,9 @@ int main(void)
 
     // Initialize GPIO
     GPIO_Init();
+
+    // Initialize I2C
+    I2C_Init();
 
     // Initialize App
     App::Init();
@@ -122,6 +127,56 @@ void GPIO_Init(void)
     // Enable EXTI0 interrupt for button
     HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+}
+
+/**
+ * @brief I2C1 Initialization Function
+ * @details Configures I2C1 for DS3231 RTC communication
+ *          Uses PB6 (SCL) and PB7 (SDA) pins
+ */
+void I2C_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {};
+
+    // Enable I2C1 and GPIOB clocks
+    __HAL_RCC_I2C1_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    // Configure I2C1 pins: PB6 (SCL) and PB7 (SDA)
+    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;        // Open-drain for I2C
+    GPIO_InitStruct.Pull = GPIO_PULLUP;            // Pull-up resistors
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF1_I2C1;     // I2C1 alternate function
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    // Configure I2C1
+    hi2c1.Instance = I2C1;
+    hi2c1.Init.Timing = 0x00707CBB;                // Standard mode (100kHz) timing for 16MHz clock
+    hi2c1.Init.OwnAddress1 = 0;
+    hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+    hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+    hi2c1.Init.OwnAddress2 = 0;
+    hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+    hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+    hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+
+    if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    // Configure Analog noise filter
+    if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    // Configure Digital noise filter
+    if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
+    {
+        Error_Handler();
+    }
 }
 
 /**

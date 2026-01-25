@@ -5,6 +5,11 @@
 #include "app/LocaleConfig.hpp"
 #include "app/TimingsConfig.hpp"
 #include <cstdint>
+#include "dev/DS3231.hpp"
+#include "stm32l0xx_hal.h"
+
+// External I2C handle declaration
+extern I2C_HandleTypeDef hi2c1;
 
 class App
 {
@@ -20,6 +25,7 @@ public:
     inline static TimingsConfig timings;
     inline static LocaleConfig locale;
     inline static AnimationRunner animation_runner;
+    inline static DS3231 rtc = DS3231(&hi2c1);
 
 private:
     // Animation state

@@ -12,7 +12,15 @@
             ],
             "defines": [
                 "STM32L052xx",
-                "HAL_TIM_MODULE_ENABLED"
+                "HAL_I2C_MODULE_ENABLED",
+                "HAL_CORTEX_MODULE_ENABLED",
+                "HAL_DMA_MODULE_ENABLED",
+                "HAL_FLASH_MODULE_ENABLED",
+                "HAL_GPIO_MODULE_ENABLED",
+                "HAL_PWR_MODULE_ENABLED",
+                "HAL_RCC_MODULE_ENABLED",
+                "HAL_TIM_MODULE_ENABLED",
+                "HAL_I2C_MODULE_ENABLED"
             ],
             "macFrameworkPath": [
                 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"

@@ -4,6 +4,24 @@
 void App::Init()
 {
     display.Init();
+    auto rtc_success = rtc.Init();
+    if (!rtc_success)
+    {
+        while (1)
+        {
+            display.Clear();
+            display.SetPm(true); // Indicate error with PM LED
+            display.Update();
+            HAL_Delay(500);
+            display.Clear();
+            display.SetPm(false);
+            display.Update();
+            HAL_Delay(500);
+        }
+    }
+    // Set test date (we don't care about the date here, just time)
+    rtc.SetDateTime({0, 45, 13, 1, 18, 8, 2025});
+
     // display.TestProcedure();
 }
 
@@ -49,12 +67,14 @@ void App::Loop()
 
 void App::DisplayTime()
 {
-    // Example time - in real implementation, get from RTC
-    int hh = 4;
-    int mm = 20;
+    auto now = rtc.GetDateTime();
+    if (!now)
+    {
+        return; // Failed to get time
+    }
 
     // Use LocaleConfig to process the time and determine animation parameters
-    auto time_params = locale.ProcessTime(hh, mm);
+    auto time_params = locale.ProcessTime(now->hour, now->minute);
 
     // Set the time animation with the processed parameters
     animation_runner.SetAnimation(Animation::Type::TIME, time_params);
