@@ -50,7 +50,14 @@ public:
         HAL_Delay(5);
 
         // Read battery voltage via ADC
-        uint32_t adc_value = battery_adc_.ReadSingleShot();
+        auto adc_result = battery_adc_.ReadSingleShot();
+        if (!adc_result.has_value())
+        {
+            // ADC read failed, deactivate divider and return invalid voltage
+            HAL_GPIO_DeInit(GPIOB, GPIO_PIN_1);
+            return 0.0f;
+        }
+        uint32_t adc_value = adc_result.value();
 
         // We are done, deactivate divider
         HAL_GPIO_DeInit(GPIOB, GPIO_PIN_1);
@@ -91,12 +98,17 @@ private:
     float GetActualVref()
     {
         // Read the internal voltage reference
-        uint32_t vrefint_adc_value = vrefint_adc_.ReadSingleShot();
+        auto vrefint_result = vrefint_adc_.ReadSingleShot();
+        if (!vrefint_result.has_value())
+        {
+            // Return default VREF value if ADC read fails
+            return 3.3f;
+        }
+        uint32_t vrefint_adc_value = vrefint_result.value();
 
         // Calculate actual ADC reference voltage
         // Formula: VREF_ACTUAL = (VREFINT_VOLTAGE * ADC_RESOLUTION) / VREFINT_ADC_VALUE
         float actual_vref = (VREFINT_VOLTAGE * static_cast<float>(AdcInput::kResolution)) / static_cast<float>(vrefint_adc_value);
-
         return actual_vref;
     }
 

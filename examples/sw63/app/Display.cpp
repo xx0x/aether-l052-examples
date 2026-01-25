@@ -61,7 +61,14 @@ void Display::DeInit()
 void Display::TriggerAutoBrightness()
 {
     // Read ambient light from PA02 (ADC channel 2)
-    uint16_t ambient_reading = ambient_light_.ReadSingleShot();
+    auto ambient_result = ambient_light_.ReadSingleShot();
+    if (!ambient_result.has_value())
+    {
+        // ADC read failed, use default brightness
+        brightness_.Set(kMaxBrightness / 2);
+        return;
+    }
+    uint16_t ambient_reading = ambient_result.value();
 
     // Map the ADC value (0-4095) to brightness range (10-1023)
     // We want some brightness even if there's no light

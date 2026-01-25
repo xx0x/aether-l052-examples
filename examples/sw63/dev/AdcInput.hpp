@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include "stm32l0xx_hal.h"
 
 /**
@@ -68,13 +69,13 @@ public:
 
     /**
      * @brief Performs a single shot ADC reading
-     * @return ADC value (0 to kResolution) or 0 if error
+     * @return ADC value (0 to kResolution) or std::nullopt if error
      */
-    uint16_t ReadSingleShot()
+    std::optional<uint16_t> ReadSingleShot()
     {
         if (!initialized_)
         {
-            return 0;
+            return std::nullopt;
         }
 
         // Configure ADC channel
@@ -86,20 +87,20 @@ public:
         sConfig.Rank = ADC_RANK_CHANNEL_NUMBER;
         if (HAL_ADC_ConfigChannel(&hadc_, &sConfig) != HAL_OK)
         {
-            return 0;
+            return std::nullopt;
         }
 
         // Start ADC conversion
         if (HAL_ADC_Start(&hadc_) != HAL_OK)
         {
-            return 0;
+            return std::nullopt;
         }
 
         // Wait for conversion completion (timeout: 10ms)
         if (HAL_ADC_PollForConversion(&hadc_, 10) != HAL_OK)
         {
             HAL_ADC_Stop(&hadc_);
-            return 0;
+            return std::nullopt;
         }
 
         // Get conversion result
