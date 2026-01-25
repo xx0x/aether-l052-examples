@@ -66,6 +66,8 @@ public:
         COUNT
     };
 
+    void SetPower(bool on);
+
     void Init();
 
     void DeInit();
