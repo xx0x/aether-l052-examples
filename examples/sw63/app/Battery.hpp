@@ -15,6 +15,9 @@ private:
     // Voltage divider ratio (measurement point voltage / battery voltage)
     static constexpr float VOLTAGE_DIVIDER_RATIO = R2 / (R1 + R2);
 
+    // Internal voltage reference specifications for STM32L0
+    static constexpr float VREFINT_VOLTAGE = 1.224f; // Typical VREFINT voltage in volts
+
 public:
     void Init()
     {
@@ -22,6 +25,11 @@ public:
         battery_adc_.Init({.port = GPIOA,
                            .pin = GPIO_PIN_3,
                            .channel = ADC_CHANNEL_3});
+
+        // Initialize internal voltage reference ADC
+        vrefint_adc_.Init({.port = nullptr, // Internal channel, no external pin
+                           .pin = 0,
+                           .channel = ADC_CHANNEL_VREFINT});
     }
 
     float GetLevel()
@@ -47,12 +55,15 @@ public:
         // We are done, deactivate divider
         HAL_GPIO_DeInit(GPIOB, GPIO_PIN_1);
 
-        // Convert ADC value to voltage at measurement point
-        // ADC: 12-bit (0-4095), 0-3.3V range
-        float measured_voltage = (static_cast<float>(adc_value) / static_cast<float>(AdcInput::kResolution)) * 3.3f;
+        // Get the actual ADC reference voltage (compensated for supply voltage drop)
+        float actual_vref = GetActualVref();
+
+        // Convert ADC value to voltage at measurement point using actual reference
+        // ADC: 12-bit (0-4095), 0-actual_vref range
+        float measured_voltage = (static_cast<float>(adc_value) / static_cast<float>(AdcInput::kResolution)) * actual_vref;
 
         // Compensation (measured from real use)
-        measured_voltage *= 1.04f;
+        measured_voltage *= 1.02f;
 
         // Convert to actual battery voltage using voltage divider ratio
         // Divider: VBAT - R1 - measurement - R2 - GND
@@ -68,10 +79,27 @@ public:
 
     void DeInit()
     {
-        // Deactivate ADC
+        // Deactivate ADCs
         battery_adc_.DeInit();
+        vrefint_adc_.DeInit();
+
+        // Prevents crashes (IDK why exactly, probably ADC issues)
+        HAL_Delay(1);
     }
 
 private:
+    float GetActualVref()
+    {
+        // Read the internal voltage reference
+        uint32_t vrefint_adc_value = vrefint_adc_.ReadSingleShot();
+
+        // Calculate actual ADC reference voltage
+        // Formula: VREF_ACTUAL = (VREFINT_VOLTAGE * ADC_RESOLUTION) / VREFINT_ADC_VALUE
+        float actual_vref = (VREFINT_VOLTAGE * static_cast<float>(AdcInput::kResolution)) / static_cast<float>(vrefint_adc_value);
+
+        return actual_vref;
+    }
+
     AdcInput battery_adc_;
+    AdcInput vrefint_adc_;
 };

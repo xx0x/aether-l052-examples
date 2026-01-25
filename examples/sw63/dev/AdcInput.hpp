@@ -31,12 +31,15 @@ public:
             return false;
         }
 
-        // Configure GPIO pin as analog input
-        GPIO_InitTypeDef GPIO_InitStruct = {};
-        GPIO_InitStruct.Pin = config_.pin;
-        GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-        GPIO_InitStruct.Pull = GPIO_NOPULL;
-        HAL_GPIO_Init(config_.port, &GPIO_InitStruct);
+        // Configure GPIO pin as analog input (only for external channels)
+        if (config_.port != nullptr)
+        {
+            GPIO_InitTypeDef GPIO_InitStruct = {};
+            GPIO_InitStruct.Pin = config_.pin;
+            GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+            GPIO_InitStruct.Pull = GPIO_NOPULL;
+            HAL_GPIO_Init(config_.port, &GPIO_InitStruct);
+        }
 
         initialized_ = true;
         return true;
@@ -53,7 +56,11 @@ public:
             return false;
         }
 
-        HAL_GPIO_DeInit(config_.port, config_.pin);
+        // Deinitialize GPIO (only for external channels)
+        if (config_.port != nullptr)
+        {
+            HAL_GPIO_DeInit(config_.port, config_.pin);
+        }
         DeInitAdc();
         initialized_ = false;
         return true;
