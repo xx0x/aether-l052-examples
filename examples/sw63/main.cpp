@@ -1,17 +1,8 @@
-#include "stm32l0xx_hal.h"
-#include "stm32l052xx.h"
-#include <bitset>
 #include "app/App.hpp"
-
-// Global variables
-volatile bool button_just_pressed = false;
-I2C_HandleTypeDef hi2c1;
-
-// Function prototypes
-void SystemClock_Config(void);
-void GPIO_Init(void);
-void I2C_Init(void);
-void Error_Handler(void);
+#include "dev/System.hpp"
+#include "stm32l052xx.h"
+#include "stm32l0xx_hal.h"
+#include <bitset>
 
 /**
  * @brief Main program entry point
@@ -19,24 +10,8 @@ void Error_Handler(void);
  */
 int main(void)
 {
-    // Reset of all peripherals, Initializes the Flash interface and the Systick
-    HAL_Init();
-
-    // Configure the system clock to use HSI (16MHz)
-    SystemClock_Config();
-
-    // Enable power control clock
-    __HAL_RCC_PWR_CLK_ENABLE();
-
-    // Additional power optimizations
-    // Disable power voltage detector (PVD) to save power
-    HAL_PWR_DisablePVD();
-
-    // Initialize GPIO
-    GPIO_Init();
-
-    // Initialize I2C
-    I2C_Init();
+    // Initialize System
+    System::Init();
 
     // Initialize App
     App::Init();
@@ -44,154 +19,7 @@ int main(void)
     // Main loop
     while (1)
     {
-        // Clear button pressed flag and any pending EXTI interrupt
-        button_just_pressed = false;
-        __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
-
         App::Loop();
-    }
-}
-
-/**
- * @brief System Clock Configuration using internal HSI oscillator
- * @details Configures the system clock to run at 16MHz using HSI
- *          This is crystalless configuration suitable for low-power applications
- */
-void SystemClock_Config(void)
-{
-    RCC_OscInitTypeDef RCC_OscInitStruct = {};
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = {};
-
-    // Configure the main internal regulator output voltage
-    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
-    // Initialize the RCC Oscillators according to the specified parameters
-    // Use HSI (High Speed Internal) 16MHz oscillator
-    // Explicitly disable LSE, LSI, and RTC for minimum power consumption
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_LSE | RCC_OSCILLATORTYPE_LSI;
-    RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-    RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-    RCC_OscInitStruct.LSEState = RCC_LSE_OFF;      // Disable LSE for power saving
-    RCC_OscInitStruct.LSIState = RCC_LSI_OFF;      // Disable LSI for power saving
-    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE; // Don't use PLL for simplicity
-
-    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    // Initialize the CPU, AHB and APB bus clocks
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
-                                  RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1; // 16MHz
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;  // 16MHz
-    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;  // 16MHz
-
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    // Ensure RTC is completely disabled
-    __HAL_RCC_RTC_DISABLE();
-}
-
-/**
- * @brief GPIO Initialization for LED on PA15
- * @details Configures PA15 as digital output for LED control
- */
-void GPIO_Init(void)
-{
-    GPIO_InitTypeDef GPIO_InitStruct = {};
-
-    // GPIO Ports Clock Enable
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-
-    // Configure GPIO pin Output Level - start with LED OFF
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
-
-    // Configure GPIO pin PA15 for LED
-    GPIO_InitStruct.Pin = GPIO_PIN_15;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;  // Push-pull output
-    GPIO_InitStruct.Pull = GPIO_NOPULL;          // No pull-up/pull-down
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW; // Low speed is sufficient for LED
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    // Configure GPIO pin PA00 for BUTTON with interrupt
-    GPIO_InitStruct.Pin = GPIO_PIN_0;
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING; // Interrupt on falling edge (button press)
-    GPIO_InitStruct.Pull = GPIO_PULLUP;          // Pull-up resistor
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    // Enable EXTI0 interrupt for button
-    HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
-}
-
-/**
- * @brief I2C1 Initialization Function
- * @details Configures I2C1 for DS3231 RTC communication
- *          Uses PB6 (SCL) and PB7 (SDA) pins
- */
-void I2C_Init(void)
-{
-    GPIO_InitTypeDef GPIO_InitStruct = {};
-
-    // Enable I2C1 and GPIOB clocks
-    __HAL_RCC_I2C1_CLK_ENABLE();
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-
-    // Configure I2C1 pins: PB6 (SCL) and PB7 (SDA)
-    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;        // Open-drain for I2C
-    GPIO_InitStruct.Pull = GPIO_PULLUP;            // Pull-up resistors
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF1_I2C1;     // I2C1 alternate function
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    // Configure I2C1
-    hi2c1.Instance = I2C1;
-    hi2c1.Init.Timing = 0x00707CBB;                // Standard mode (100kHz) timing for 16MHz clock
-    hi2c1.Init.OwnAddress1 = 0;
-    hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-    hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-    hi2c1.Init.OwnAddress2 = 0;
-    hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-    hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-    hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-
-    if (HAL_I2C_Init(&hi2c1) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    // Configure Analog noise filter
-    if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    // Configure Digital noise filter
-    if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
-    {
-        Error_Handler();
-    }
-}
-
-/**
- * @brief Error Handler
- * @details This function is executed in case of error occurrence
- *          In a real application, you might want to implement proper error handling
- */
-void Error_Handler(void)
-{
-    // User can add his own implementation to report the HAL error return state
-    __disable_irq();
-    while (1)
-    {
-        // Infinite loop in case of error
-        // You could blink LED in a different pattern to indicate error
     }
 }
 
@@ -237,8 +65,7 @@ extern "C" void EXTI0_1_IRQHandler(void)
         // Clear the interrupt flag
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
 
-        // Set the global button pressed flag
-        button_just_pressed = true;
+        // Set button pressed flag?
 
         // The system will automatically exit from stop mode
         // No additional code needed here for basic wakeup

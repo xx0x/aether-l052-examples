@@ -10,6 +10,7 @@ set(EXAMPLE_SOURCES
     app/animations/AnimationTime.cpp
     app/animations/AnimationIntro.cpp
     app/animations/AnimationCharge.cpp
+    dev/System.cpp
     dev/DS3231.cpp
 )
 

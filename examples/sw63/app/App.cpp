@@ -1,4 +1,5 @@
 #include "App.hpp"
+#include "dev/System.hpp"
 #include "stm32l0xx_hal.h"
 
 void App::Init()
@@ -22,6 +23,7 @@ void App::Init()
     // Set test date (we don't care about the date here, just time)
     rtc.SetDateTime({0, 45, 13, 1, 18, 8, 2025});
 
+    DisplayTime();
     // display.TestProcedure();
 }
 
@@ -58,10 +60,13 @@ void App::Loop()
     else
     {
         // Display time every 2 seconds
-        if (HAL_GetTick() - last_animation_update_ >= 2000)
-        {
-            DisplayTime();
-        }
+        // if (HAL_GetTick() - last_animation_update_ >= 2000)
+        //{
+        //    DisplayTime();
+        //}
+        Sleep();
+
+        DisplayTime();
     }
 }
 
@@ -89,4 +94,12 @@ void App::StartIntroAnimation()
     animation_runner.SetAnimation(Animation::Type::INTRO);
     animation_delay_remaining_ = 0;
     last_animation_update_ = HAL_GetTick();
+}
+
+void App::Sleep()
+{
+    System::Sleep();
+
+    // Small delay for button debouncing after wakeup
+    HAL_Delay(50);
 }
