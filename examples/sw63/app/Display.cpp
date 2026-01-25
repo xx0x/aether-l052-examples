@@ -11,7 +11,6 @@ void Display::Init()
         .Speed = GPIO_SPEED_LOW,
     };
     HAL_GPIO_Init(kDisplayEnablePin.port, &GPIO_InitStruct);
-    Pin::EnablePort(kDisplayEnablePin);
     HAL_GPIO_WritePin(kDisplayEnablePin.port, kDisplayEnablePin.pin, GPIO_PIN_RESET);
 
     // Initialize PWM brightness control
