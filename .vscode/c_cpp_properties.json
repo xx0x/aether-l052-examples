@@ -20,6 +20,7 @@
                 "HAL_PWR_MODULE_ENABLED",
                 "HAL_RCC_MODULE_ENABLED",
                 "HAL_TIM_MODULE_ENABLED",
+                "HAL_ADC_MODULE_ENABLED",
                 "HAL_I2C_MODULE_ENABLED"
             ],
             "macFrameworkPath": [

@@ -42,6 +42,7 @@
 #define HAL_RCC_MODULE_ENABLED
 #define HAL_TIM_MODULE_ENABLED
 #define HAL_I2C_MODULE_ENABLED
+#define HAL_ADC_MODULE_ENABLED
 
 /* ########################## HSE/HSI Values ################################ */
 /**

@@ -45,6 +45,9 @@ void App::Loop()
                 HAL_Delay(timings.GetSpeed().pause);
             }
 
+            // Update display brightness based on ambient light (the lights need to be off to read it properly)
+            display.UpdateBrightness();
+
             // Process the next frame and get the delay until the next update
             animation_delay_remaining_ = animation_runner.ProcessNextFrame();
             last_animation_update_ = HAL_GetTick();

@@ -8,7 +8,7 @@
 class PwmBrightness
 {
 public:
-    static constexpr uint16_t kResolution = 1023; // 10-bit max value
+    static constexpr uint16_t kResolution = 4095; // 12-bit max value
 
     /*
     // Unused for now
@@ -44,8 +44,8 @@ public:
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
         // Configure TIM22 for PWM
-        // With 16MHz clock, prescaler 0, and period 1023:
-        // PWM frequency = 16,000,000 / (0+1) / (1023+1) = ~15.6 kHz
+        // With 16MHz clock, prescaler 0, and period 4095:
+        // PWM frequency = 16,000,000 / (0+1) / (4095+1) = ~3.9 kHz
         htim_.Instance = TIM22;
         htim_.Init.Prescaler = 0; // No prescaling for maximum speed
         htim_.Init.CounterMode = TIM_COUNTERMODE_UP;

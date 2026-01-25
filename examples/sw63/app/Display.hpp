@@ -2,6 +2,7 @@
 
 #include "dev/ShiftRegister.hpp"
 #include "dev/PwmBrightness.hpp"
+#include "dev/AdcInput.hpp"
 #include "lib/EnumTools.hpp"
 
 class Display
@@ -71,6 +72,8 @@ public:
 
     void SetBrightness(uint16_t brightness);
 
+    void UpdateBrightness();
+
     void Clear();
 
     void Update();
@@ -96,6 +99,7 @@ private:
     std::bitset<kLedCount> data_;
     ShiftRegister<kLedCount> display_register_;
     PwmBrightness brightness_;
+    AdcInput ambient_light_;
     NumMode num_mode_ = NumMode::BAR_REVERSED;
 
     // Lookup tables for different modes
