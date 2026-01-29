@@ -57,12 +57,14 @@ public:
         COUNT,
     };
 
-    enum class NumMode
+    enum class NumStyle
     {
         SINGLE,
         SINGLE_REVERSED,
         BAR,
-        BAR_REVERSED, // OG behavior
+        BAR_REVERSED,   // OG behavior
+        SNAKE,          // Shows 3 LEDs in a row for snake effect (not ideal for specific numbers)
+        SNAKE_REVERSED, // Shows 3 LEDs in a row for snake effect (not ideal for specific numbers)
         COUNT
     };
 
@@ -82,19 +84,17 @@ public:
 
     void SetTopLed(TopLed led);
 
-    void SetNumber(size_t number);
-
-    void SetNumberLed(size_t number_led, bool reversed = false);
+    void SetNumber(size_t number, NumStyle style = NumStyle::COUNT);
 
     void SetLed(Led led, bool on);
 
     void TestProcedure();
 
-private:
-    void SetPower(bool on);
-
     static constexpr size_t kLedCount = 24;
     static constexpr size_t kNumLedCount = 12;
+
+private:
+    void SetPower(bool on);
 
     static constexpr Pin kDisplayEnablePin = {GPIOA, GPIO_PIN_1};
 
@@ -102,7 +102,7 @@ private:
     ShiftRegister<kLedCount> display_register_;
     PwmBrightness brightness_;
     AdcInput ambient_light_;
-    NumMode num_mode_ = NumMode::BAR_REVERSED;
+    NumStyle num_style_ = NumStyle::BAR_REVERSED;
 
     // Lookup tables for different modes
     // Don't change the order of these arrays.

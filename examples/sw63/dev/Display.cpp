@@ -111,8 +111,13 @@ void Display::SetTopLed(TopLed led)
     data_.set(static_cast<size_t>(Led::BEFORE), TopLed::BEFORE == led);
 }
 
-void Display::SetNumber(size_t number)
+void Display::SetNumber(size_t number, NumStyle style)
 {
+    if (style == NumStyle::COUNT)
+    {
+        style = num_style_;
+    }
+
     for (auto led : kNumLeds)
     {
         data_.set(static_cast<size_t>(led), false);
@@ -122,39 +127,39 @@ void Display::SetNumber(size_t number)
         return;
     }
 
-    switch (num_mode_)
+    switch (style)
     {
-    case NumMode::SINGLE:
+    case NumStyle::SINGLE:
         data_.set(static_cast<size_t>(kNumLeds[number - 1]), true);
         break;
 
-    case NumMode::SINGLE_REVERSED:
+    case NumStyle::SINGLE_REVERSED:
         data_.set(static_cast<size_t>(kRevNumLeds[number - 1]), true);
         break;
 
-    case NumMode::BAR:
+    case NumStyle::BAR:
         for (size_t i = 0; i < number; ++i)
         {
             data_.set(static_cast<size_t>(kNumLeds[i]), true);
         }
         break;
-
-    case NumMode::BAR_REVERSED:
+    case NumStyle::BAR_REVERSED:
         for (size_t i = 0; i < number; ++i)
         {
             data_.set(static_cast<size_t>(kRevNumLeds[i]), true);
         }
         break;
+    case NumStyle::SNAKE:
+        data_.set(static_cast<size_t>(kNumLeds[number - 1]), true);
+        data_.set(static_cast<size_t>(kNumLeds[number % Display::kNumLedCount]), true);
+        data_.set(static_cast<size_t>(kNumLeds[(number + 1) % Display::kNumLedCount]), true);
+        break;
+    case NumStyle::SNAKE_REVERSED:
+        data_.set(static_cast<size_t>(kRevNumLeds[number - 1]), true);
+        data_.set(static_cast<size_t>(kRevNumLeds[number % Display::kNumLedCount]), true);
+        data_.set(static_cast<size_t>(kRevNumLeds[(number + 1) % Display::kNumLedCount]), true);
+        break;
     }
-}
-
-void Display::SetNumberLed(size_t number_led, bool reversed)
-{
-    if (number_led == 0 || number_led > kNumLedCount)
-    {
-        return;
-    }
-    data_.set(static_cast<size_t>(reversed ? kRevNumLeds[number_led - 1] : kNumLeds[number_led - 1]), true);
 }
 
 void Display::SetLed(Led led, bool on)

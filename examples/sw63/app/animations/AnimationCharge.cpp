@@ -3,40 +3,19 @@
 
 uint32_t AnimationCharge::ProcessNextFrame()
 {
-    static constexpr uint32_t kLedCount = 12;
-    uint32_t total_steps = kLedCount;
-
-    if (visual_style_ == VisualStyle::BAR)
-    {
-        // 12 numbers + 1 full cycle
-        total_steps += 1;
-    }
-
-    if (current_step_ >= total_steps)
+    if (current_step_ >= Display::kNumLedCount)
     {
         // Restart animation for continuous charging indicator
         current_step_ = 0;
     }
 
-    App::display.Clear();
+    const uint32_t led_number = std::clamp(static_cast<size_t>(current_step_ + 1u),
+                                           static_cast<size_t>(1u),
+                                           static_cast<size_t>(Display::kNumLedCount));
 
-    // Bar fill type animation
-    switch (visual_style_)
-    {
-    case VisualStyle::BAR:
-        App::display.SetNumber(std::clamp(current_step_ + 1ul, 1ul, kLedCount));
-        break;
-    case VisualStyle::SINGLE:
-        App::display.Clear();
-        App::display.SetNumberLed(current_step_ + 1, true);
-        break;
-    case VisualStyle::SNAKE:
-        App::display.Clear();
-        App::display.SetNumberLed(current_step_ + 1, true);
-        App::display.SetNumberLed((current_step_ + 1) % kLedCount + 1, true);
-        App::display.SetNumberLed((current_step_ + 2) % kLedCount + 1, true);
-        break;
-    }
+    App::display.Clear();
+    App::display.SetNumber(led_number,
+                           Display::NumStyle::SNAKE_REVERSED);
 
     App::display.Update();
     current_step_++;
