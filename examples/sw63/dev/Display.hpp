@@ -84,6 +84,8 @@ public:
 
     void SetNumber(size_t number);
 
+    void SetNumberLed(size_t number_led, bool reversed = false);
+
     void SetLed(Led led, bool on);
 
     void TestProcedure();

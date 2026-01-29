@@ -52,6 +52,8 @@ void Display::SetPower(bool on)
 
 void Display::DeInit()
 {
+    Clear();
+    Update();
     brightness_.DeInit();
     ambient_light_.DeInit();
     display_register_.DeInit();
@@ -144,6 +146,15 @@ void Display::SetNumber(size_t number)
         }
         break;
     }
+}
+
+void Display::SetNumberLed(size_t number_led, bool reversed)
+{
+    if (number_led == 0 || number_led > kNumLedCount)
+    {
+        return;
+    }
+    data_.set(static_cast<size_t>(reversed ? kRevNumLeds[number_led - 1] : kNumLeds[number_led - 1]), true);
 }
 
 void Display::SetLed(Led led, bool on)

@@ -77,26 +77,39 @@ void System::GpioInit()
 
     // GPIO Ports Clock Enable
     __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
 
     // Configure GPIO pin Output Level - start with LED OFF
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
+    // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
 
     // Configure GPIO pin PA15 for LED
-    GPIO_InitStruct.Pin = GPIO_PIN_15;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;  // Push-pull output
-    GPIO_InitStruct.Pull = GPIO_NOPULL;          // No pull-up/pull-down
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW; // Low speed is sufficient for LED
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
+    // GPIO_InitStruct.Pin = GPIO_PIN_15;
+    // GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;  // Push-pull output
+    // GPIO_InitStruct.Pull = GPIO_NOPULL;          // No pull-up/pull-down
+    // GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW; // Low speed is sufficient for LED
+    // HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    
     // Configure GPIO pin PA00 for BUTTON with interrupt
     GPIO_InitStruct.Pin = GPIO_PIN_0;
     GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING; // Interrupt on falling edge (button press)
     GPIO_InitStruct.Pull = GPIO_PULLUP;          // Pull-up resistor
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW; // Low speed is sufficient for BUTTON
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);    
+
+    // Configure GPIO pin PB08 for CHARGE_STATE with interrupt
+    GPIO_InitStruct.Pin = GPIO_PIN_8;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING; // Interrupt on falling edge (charging detect)
+    GPIO_InitStruct.Pull = GPIO_PULLUP;          // Pull-up resistor
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW; // Low speed is sufficient for CHARGE_STATE
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     // Enable EXTI0 interrupt for button
     HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+
+    // Enable EXTI4_15 interrupt for CHARGE_STATE
+    HAL_NVIC_SetPriority(EXTI4_15_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 }
 
 /**
@@ -168,6 +181,7 @@ void System::ErrorHandler()
 void System::Sleep()
 {
     __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+    __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
 
     // Enter Stop mode
     // The system will wake up on EXTI interrupt (button press)

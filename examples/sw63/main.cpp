@@ -71,3 +71,12 @@ extern "C" void EXTI0_1_IRQHandler(void)
         // No additional code needed here for basic wakeup
     }
 }
+
+extern "C" void EXTI4_15_IRQHandler()
+{
+    if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_8) != RESET)
+    {
+        __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
+        // Handle charge state change
+    }
+}

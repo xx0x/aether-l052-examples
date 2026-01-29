@@ -67,6 +67,11 @@ public:
         return IsShowingTime();
     }
 
+    Animation::Type GetCurrentAnimationType() const
+    {
+        return current_type_;
+    }
+
 private:
     Animation::Type current_type_ = Animation::Type::INTRO;
     EnumArray<Animation::Type, std::unique_ptr<Animation>> animations_;

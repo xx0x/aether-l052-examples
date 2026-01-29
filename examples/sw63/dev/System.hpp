@@ -20,6 +20,16 @@ public:
         HAL_Delay(ms);
     }
 
+    static bool GetButtonState()
+    {
+        return HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_RESET; // Active low
+    }
+
+    static bool GetChargeState()
+    {
+        return HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_8) == GPIO_PIN_RESET; // Active low
+    }
+
 private:
     System() = delete; // Prevent instantiation
 };

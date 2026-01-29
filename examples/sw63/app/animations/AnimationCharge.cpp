@@ -3,9 +3,16 @@
 
 uint32_t AnimationCharge::ProcessNextFrame()
 {
-    static constexpr uint32_t kTotalSteps = 13; // 12 numbers + 1 full cycle
+    static constexpr uint32_t kLedCount = 12;
+    uint32_t total_steps = kLedCount;
 
-    if (current_step_ >= kTotalSteps)
+    if (visual_style_ == VisualStyle::BAR)
+    {
+        // 12 numbers + 1 full cycle
+        total_steps += 1;
+    }
+
+    if (current_step_ >= total_steps)
     {
         // Restart animation for continuous charging indicator
         current_step_ = 0;
@@ -13,15 +20,22 @@ uint32_t AnimationCharge::ProcessNextFrame()
 
     App::display.Clear();
 
-    if (current_step_ == 0)
+    // Bar fill type animation
+    switch (visual_style_)
     {
-        // Show all numbers briefly to indicate full
-        App::display.SetNumber(12);
-    }
-    else
-    {
-        // Progressive fill animation
-        App::display.SetNumber(current_step_);
+    case VisualStyle::BAR:
+        App::display.SetNumber(std::clamp(current_step_ + 1ul, 1ul, kLedCount));
+        break;
+    case VisualStyle::SINGLE:
+        App::display.Clear();
+        App::display.SetNumberLed(current_step_ + 1, true);
+        break;
+    case VisualStyle::SNAKE:
+        App::display.Clear();
+        App::display.SetNumberLed(current_step_ + 1, true);
+        App::display.SetNumberLed((current_step_ + 1) % kLedCount + 1, true);
+        App::display.SetNumberLed((current_step_ + 2) % kLedCount + 1, true);
+        break;
     }
 
     App::display.Update();

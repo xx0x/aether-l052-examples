@@ -17,6 +17,7 @@ public:
 
     static void DisplayTime();
     static void StartIntroAnimation();
+    static void StartChargeAnimation();
 
     inline static Display display;
     inline static TimingsConfig timings;

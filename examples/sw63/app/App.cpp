@@ -35,7 +35,8 @@ void App::Loop()
     uint32_t current_time = HAL_GetTick();
 
     // Process animations if one is active
-    if (!animation_runner.IsFinished())
+    if (!animation_runner.IsFinished() &&
+        !(animation_runner.GetCurrentAnimationType() == Animation::Type::CHARGE && !System::GetChargeState()))
     {
         // Check if it's time for the next animation frame
         if (current_time >= last_animation_update_ + animation_delay_remaining_)
@@ -46,10 +47,10 @@ void App::Loop()
                 display.Clear();
                 display.Update();
                 System::Delay(timings.GetSpeed().pause);
-            }
 
-            // Update display brightness based on ambient light (the lights need to be off to read it properly)
-            display.TriggerAutoBrightness();
+                // Update display brightness based on ambient light (the lights need to be off to read it properly)
+                display.TriggerAutoBrightness();
+            }
 
             // Process the next frame and get the delay until the next update
             animation_delay_remaining_ = animation_runner.ProcessNextFrame();
@@ -70,9 +71,28 @@ void App::Loop()
         //{
         //    DisplayTime();
         //}
-        Sleep();
 
-        DisplayTime();
+        if (System::GetChargeState())
+        {
+            // Start charge animation if charging
+            StartChargeAnimation();
+        }
+        else
+        {
+            // No activity, go to sleep
+            Sleep();
+
+            if (System::GetButtonState())
+            {
+                // Wake up by button
+                DisplayTime();
+            }
+            else if (System::GetChargeState())
+            {
+                // Wake up by charging
+                StartChargeAnimation();
+            }
+        }
     }
 }
 
@@ -97,7 +117,16 @@ void App::DisplayTime()
 
 void App::StartIntroAnimation()
 {
+    display.TriggerAutoBrightness();
     animation_runner.SetAnimation(Animation::Type::INTRO);
+    animation_delay_remaining_ = 0;
+    last_animation_update_ = HAL_GetTick();
+}
+
+void App::StartChargeAnimation()
+{
+    display.TriggerAutoBrightness();
+    animation_runner.SetAnimation(Animation::Type::CHARGE);
     animation_delay_remaining_ = 0;
     last_animation_update_ = HAL_GetTick();
 }
@@ -105,13 +134,11 @@ void App::StartIntroAnimation()
 void App::Sleep()
 {
 
-
     // Show battery level before sleep
-    float battery_level = battery.GetLevel();
-    display.SetNumber(battery_level * 12.f);
-    display.Update();
-    System::Delay(1000);
-
+    // float battery_level = battery.GetLevel();
+    // display.SetNumber(battery_level * 12.f);
+    // display.Update();
+    // System::Delay(1000);
 
     display.DeInit();
     battery.DeInit();
