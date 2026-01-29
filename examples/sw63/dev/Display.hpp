@@ -103,6 +103,7 @@ private:
 
     // Lookup tables for different modes
     // Don't change the order of these arrays.
+    // Change the enum Led above if needed.
     static constexpr Led kNumLeds[kNumLedCount] = {
         Led::NUM_1, Led::NUM_2, Led::NUM_3, Led::NUM_4, Led::NUM_5, Led::NUM_6,
         Led::NUM_7, Led::NUM_8, Led::NUM_9, Led::NUM_10, Led::NUM_11, Led::NUM_12};
