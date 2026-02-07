@@ -37,11 +37,11 @@ int main(void)
     {
         // Turn LED ON
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
-        HAL_Delay(300);
+        HAL_Delay(500);
 
         // Turn LED OFF
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
-        HAL_Delay(700);
+        HAL_Delay(500);
     }
 }
 
