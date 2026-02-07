@@ -211,8 +211,9 @@ function(create_example_targets example_name)
     add_custom_command(TARGET ${TARGET_NAME_BOOTLOADER} POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -O binary ${TARGET_NAME_BOOTLOADER}.elf ${TARGET_NAME_BOOTLOADER}.bin
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${TARGET_NAME_BOOTLOADER}.elf ${TARGET_NAME_BOOTLOADER}.hex
+        COMMAND python3 ${CMAKE_SOURCE_DIR}/lib/uf2/utils/uf2conv.py -c -f STM32L0 ${TARGET_NAME_BOOTLOADER}.hex -o ${TARGET_NAME_BOOTLOADER}.uf2
         COMMAND ${CMAKE_SIZE} ${TARGET_NAME_BOOTLOADER}.elf
-        COMMENT "Building ${TARGET_NAME_BOOTLOADER}.bin and ${TARGET_NAME_BOOTLOADER}.hex"
+        COMMENT "Building ${TARGET_NAME_BOOTLOADER}.bin, ${TARGET_NAME_BOOTLOADER}.hex and ${TARGET_NAME_BOOTLOADER}.uf2"
     )
     
     # Generate J-Link script for bootloader version
